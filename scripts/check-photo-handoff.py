@@ -42,7 +42,8 @@ def front_photo(page):
 
 with sync_playwright() as p:
     browser = p.chromium.launch()
-    for name, width, height in [('desktop',1440,900),('mobile',390,844)]:
+    # Mobile has independent scene photos; check-mobile-flow.py covers that path.
+    for name, width, height in [('tablet',768,1024),('laptop',1024,768),('desktop',1440,900)]:
         page = browser.new_page(viewport={'width':width,'height':height})
         errors = []
         page.on('pageerror', lambda e: errors.append(str(e)))

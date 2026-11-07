@@ -86,12 +86,7 @@ with sync_playwright() as p:
             expect(page.locator('.dates-stage')).to_have_attribute('data-active',str(i))
             assert page.locator('.date-panel.is-active').evaluate('(el)=>getComputedStyle(el).isolation')=='isolate'
             shot(page,f'desktop-date-{i+1}')
-            page.locator('.date-panel.is-active').get_by_role('button',name='Mở thiệp mời',exact=True).click()
-            dialog=page.get_by_role('dialog',name=f'Thiệp mời {event["name"]}')
-            expect(dialog).to_contain_text(event['lunarDate']);expect(dialog).to_contain_text(event['address'])
-            if event.get('receptionTime'):expect(dialog).to_contain_text(event['receptionTime'])
-            assert dialog.locator('a').count()==(1 if event.get('mapQuery') else 0)
-            page.keyboard.press('Escape');page.wait_for_timeout(350)
+            assert page.locator('.date-panel.is-active .date-actions button').count()==1
         page.locator('.date-panel.is-active').get_by_role('button',name='Mình có hẹn nhé').click()
         page.get_by_label('TÊN CỦA BẠN',exact=True).fill('Khách mới')
         page.get_by_label('SỐ NGƯỜI THAM DỰ',exact=True).select_option('3')
@@ -120,10 +115,10 @@ with sync_playwright() as p:
         open_site(mobile, args.url,wait_until='networkidle');shot(mobile,'mobile-hero')
         mobile.get_by_role('button',name='Mở mục lục').click()
         mobile.get_by_role('button',name='Lịch hẹn',exact=False).click()
-        mobile.wait_for_function('Math.abs(document.getElementById("event").getBoundingClientRect().top)<5',timeout=7000)
+        mobile.wait_for_function('()=>{const el=document.getElementById("event");return Math.abs(el.getBoundingClientRect().top-parseFloat(getComputedStyle(el).scrollMarginTop))<5}',timeout=7000)
         for selector,fraction,label in [('#home',.9,'reveal'),('#opening',.4,'reading'),('#couple',.3,'families'),('#couple',.93,'families-end'),('.reel-film',.53,'reel'),('.wave-film',.8,'wave'),('#event',.5,'date-2')]:
             seek(mobile,selector,fraction);healthy(mobile);shot(mobile,f'mobile-{label}')
-        seek(mobile,'.reel-film',0);mobile.locator('.reel-frame.is-current .reel-photo-button').click();mobile.wait_for_timeout(400)
+        seek(mobile,'.reel-film',0);mobile.locator('.mobile-album-tile .reel-photo-button').first.click();mobile.wait_for_timeout(400)
         client=mobile.context.new_cdp_session(mobile)
         client.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':300,'y':350}]})
         for x in [260,220,180,140,90]:client.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':x,'y':350}]})
@@ -153,7 +148,7 @@ with sync_playwright() as p:
             seek(test,'.reel-film',0)
             cap=4 if test.viewport_size['width']<=700 else 6
             assert test.locator('.reel-frame').count()==min(cap,count)
-            test.locator('.reel-frame.is-current .reel-photo-button').click();test.wait_for_timeout(400)
+            test.locator('.mobile-album-tile .reel-photo-button' if cap==4 else '.reel-frame.is-current .reel-photo-button').first.click();test.wait_for_timeout(400)
             expect(test.locator('.photo-caption')).to_contain_text(f'1 / {count}')
             assert test.get_by_role('button',name='Ảnh tiếp',exact=True).count()==(1 if count>1 else 0)
             assert test.get_by_role('button',name='Phát slideshow',exact=True).count()==(1 if count>1 else 0)

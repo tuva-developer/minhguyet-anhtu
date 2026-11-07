@@ -22,7 +22,8 @@ with sync_playwright() as p:
     browser=p.chromium.launch()
     errors=[]
     site=None
-    for label,width,height in [('desktop',1440,900),('mobile',390,844)]:
+    # The mobile grid deliberately does not grow an outgoing fullscreen tile.
+    for label,width,height in [('desktop',1440,900)]:
         page=browser.new_page(viewport={'width':width,'height':height})
         page.on('pageerror',lambda e:errors.append(str(e)))
         open_site(page, args.url,wait_until='networkidle')
@@ -58,7 +59,7 @@ with sync_playwright() as p:
         fixture['photos']=fixture['photos'][:count]
         fixture['albumFinalPhotoId']=preferred
         fixture['musicUrl']=''
-        page=browser.new_page(viewport={'width':390,'height':844})
+        page=browser.new_page(viewport={'width':1440,'height':900})
         page.on('pageerror',lambda e:errors.append(str(e)))
         code='export const wedding='+json.dumps(fixture,ensure_ascii=False)+';'
         page.route('**/src/data/site.js*',fixture_route(code))
@@ -70,8 +71,8 @@ with sync_playwright() as p:
             seek(page,.99)
             expect(page.locator('.montage-stage')).to_have_attribute('data-primary-photo',expected)
             ids=page.locator('.montage-tile').evaluate_all('(els)=>els.map(el=>el.dataset.photoId)')
-            assert len(ids)==len(set(ids))==min(count,4),ids
-            assert page.locator('.is-current').bounding_box()['width']>=389
+            assert len(ids)==len(set(ids))==min(count,6),ids
+            assert page.locator('.is-current').bounding_box()['width']>=1439
         assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')
         print(f'PASS {name}: valid outgoing photo and no duplicated tiles.',flush=True)
         page.close()

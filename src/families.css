@@ -1,42 +1,49 @@
-/* Developer and designer: opposite entrances, layered portraits and drawn marks. */
-.family-film { height: 250svh; background: #f0e7dc; }
+/* Developer and designer: opposite entrances, layered portraits and soft arches. */
+.family-film { height: 205svh; background: #f0e7dc; }
 .family-filter-defs { position: absolute; pointer-events: none; overflow: hidden; }
 .family-stage {
   color: var(--wine);
   background: radial-gradient(ellipse at 25% 70%, #d8d5c440, transparent 45%),
     radial-gradient(ellipse at 78% 60%, #d9b8ac30, transparent 46%), #f4eee5;
 }
-.family-stage::before { content: ''; position: absolute; top: 110px; bottom: 90px; left: 50%; width: 1px; background: #6f203118; }
+.family-stage::before { content: ''; position: absolute; top: 110px; bottom: 90px; left: 50%; width: 1px; background: linear-gradient(to bottom, #6f203118 calc(54% - 22px), transparent calc(54% - 22px), transparent calc(54% + 18px), #6f203118 calc(54% + 18px)); }
 .family-spread { position: absolute; inset: 118px 8% 88px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10%; }
 .family-person { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 168px minmax(0, 1fr); }
 .family-name { position: relative; z-index: 4; padding-top: 6px; text-align: center; }
 .family-role { font: 400 var(--type-label)/1.5 var(--sans); color: #7e6b60; letter-spacing: .08em; }
-.family-career { display: flex; justify-content: center; align-items: center; gap: 10px; width: fit-content; margin: 10px auto 0; padding: 8px 17px; border: 1px solid #6f20312b; border-radius: 30px; background: #fff8; font: 400 14px/1.4 var(--sans); color: var(--wine); }
-.family-bride .family-career { background: #ead5c84d; }
+.family-career {
+  --brush-color: #6f2031;
+  --brush-tilt: -1.5deg;
+  --brush-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 64' preserveAspectRatio='none'%3E%3Cpath fill='white' fill-rule='evenodd' d='M8 18L26 13 18 11Q68 5 112 9T204 10L231 14 221 18 237 22 228 29 234 33 224 39 230 43 207 46 216 50Q167 57 124 53T30 54L11 50 22 46 4 42 13 35 6 31 15 25ZM28 18L69 15 66 16 30 20ZM177 16L219 19 216 20 179 18ZM19 42L54 44 50 45 21 44ZM157 49L206 46 202 48 160 51Z'/%3E%3Cpath fill='white' opacity='.55' d='M3 24L29 19 27 21 4 27ZM213 39L239 35 235 38 215 41ZM32 56L82 55 78 57 35 58Z'/%3E%3C/svg%3E");
+  position: relative; isolation: isolate; display: flex; justify-content: center; align-items: center; gap: 9px;
+  width: fit-content; margin: 12px auto 0; padding: 7px 20px; border: 0; background: transparent;
+  font: 400 14px/1.4 var(--sans); color: #fffaf4;
+}
+.family-career::before {
+  content: ''; position: absolute; z-index: -1; inset: -3px -12px; pointer-events: none;
+  background: repeating-linear-gradient(177deg, transparent 0 8px, #f4eee526 8px 8.6px, transparent 8.6px 13px), var(--brush-color);
+  mask-image: var(--brush-mask); mask-size: 100% 100%; mask-repeat: no-repeat; transform: rotate(var(--brush-tilt));
+}
+.family-bride .family-career { --brush-color: #935b4a; --brush-tilt: 1.5deg; }
 .family-career svg { flex-shrink: 0; }
 .family-name h3 { margin: 12px 0 0; font: 500 clamp(26px, 3vw, 44px)/1.2 var(--serif); letter-spacing: -.025em; white-space: nowrap; }
 .family-portrait { position: relative; grid-row: 2; min-height: 0; isolation: isolate; margin: 0 -5%; }
 .family-portrait-halo { position: absolute; z-index: -2; inset: 13% 14% 2%; border-radius: 48% 48% 2px 2px; background: linear-gradient(145deg, #c8cab6, #e2dfcf 68%, #ede7d9); box-shadow: inset 1px 1px 0 #fff8; }
 .family-bride .family-portrait-halo { background: linear-gradient(145deg, #d9bca9, #e9d8c7 65%, #efe5d7); }
-.family-initial { position: absolute; z-index: -1; top: -3%; left: 7%; font: italic 400 clamp(140px, 18vw, 280px)/1 var(--serif); color: #6f203114; pointer-events: none; }
-.family-bride .family-initial { left: auto; right: 4%; }
-.family-career-art { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; fill: none; stroke: #846652; stroke-width: 1.5; pointer-events: none; overflow: visible; }
-.career-line { opacity: .65; stroke-linecap: round; stroke-linejoin: round; }
-.career-handles { opacity: .25; stroke-dasharray: 4 6; }
-.career-nodes { fill: #f4eee5; opacity: .75; }
 .family-portrait-shadow { position: absolute; left: 14%; right: 14%; bottom: 1%; height: 7%; border-radius: 50%; background: #3a302526; filter: blur(10px); }
 .family-subject-frame { position: absolute; inset: 0; z-index: 1; overflow: hidden; transform-origin: 50% 85%; will-change: transform; mask-image: linear-gradient(#000 0%, #000 88%, transparent 100%); }
 .family-subject { position: absolute; display: block; top: 0; left: 50%; translate: -50% 0; max-width: none; height: auto; width: auto; filter: drop-shadow(14px 12px 14px #44322424); }
 .has-cutout .family-subject { filter: var(--family-cutout-outline) drop-shadow(14px 12px 14px #44322424); }
 .family-groom .has-cutout .family-subject { height: 112%; translate: -58% 0; }
 .family-bride .has-cutout .family-subject { height: 245%; top: -18%; translate: -39% 0; }
+.family-bride .has-masked-original .family-subject { height: 320%; top: -66%; translate: -38% 0; }
 .family-orbit { position: absolute; z-index: 2; left: 2%; right: 2%; bottom: 15%; height: 17%; border: 1px solid #8e70523d; border-top-color: transparent; border-radius: 50%; pointer-events: none; }
 .family-orbit i { position: absolute; right: 5%; bottom: 13%; width: 5px; height: 5px; border-radius: 50%; background: #a07a56; box-shadow: 0 0 0 4px #f4eee580; }
 .family-portrait-caption { position: absolute; z-index: 3; bottom: -3px; left: 0; right: 0; text-align: center; font: italic 400 21px/1.4 var(--serif); color: #816854; }
-.family-heart { position: absolute; z-index: 3; left: 50%; top: 54%; translate: -50% -50%; font-size: 30px; line-height: 1; background: #f4eee5; padding: 15px 9px; color: var(--wine); }
+.family-heart { position: absolute; z-index: 3; left: 50%; top: 54%; translate: -50% -50%; display: grid; place-items: center; width: 32px; height: 32px; font-size: 26px; line-height: 1; background: transparent; padding: 0; color: var(--wine); pointer-events: none; }
+.family-heart .love-mark > svg { stroke: none; }
 .family-person .has-original .family-subject-frame { inset: 3% 14% 6%; border-radius: 45% 45% 2px 2px; }
 .family-person .has-original .family-subject { width: 100%; height: 100%; object-fit: cover; object-position: 50% 25% !important; filter: none; }
-.family-without-photo .family-initial { top: 10%; left: 50%; right: auto; translate: -50% 0; color: #6f20312b; }
 .family-without-photo .family-portrait-halo { opacity: .4; }
 .family-stage .scene-hud { color: var(--wine); }
 
@@ -47,31 +54,25 @@
 }
 @media (max-width: 700px) {
   .family-film { height: 240svh; }
-  .family-spread { inset: 100px 6% 82px; gap: 7%; }
-  .family-stage::before { top: 100px; bottom: 90px; }
-  .family-person { grid-template-rows: 224px minmax(0, 1fr); }
-  .family-name { position: absolute; top: 0; left: 0; right: 0; padding-top: 0; }
-  .family-bride .family-name { top: 108px; }
-  .family-role { font-size: 10px; line-height: 1.6; letter-spacing: .02em; }
-  .family-name h3 { font-size: clamp(23px, 6.5vw, 30px); line-height: 1.2; margin-top: 8px; }
-  .family-career { margin-top: 6px; padding: 4px 12px; gap: 7px; font-size: 12px; }
-  .family-career svg { width: 15px; height: 15px; }
-  .family-portrait { margin: 0 -8%; }
+  .family-spread { position: relative; inset: auto; padding: 0; gap: 6%; align-content: start; }
+  .family-stage::before { top: 100px; bottom: 90px; background: linear-gradient(to bottom, #6f203118 calc(55% - 10.5px), transparent calc(55% - 10.5px), transparent calc(55% + 19.5px), #6f203118 calc(55% + 19.5px)); }
+  .family-person { grid-template-rows: 112px auto; row-gap: 18px; }
+  .family-name { position: relative; padding-top: 0; }
+  .family-role { font-size: 10px; line-height: 1.5; letter-spacing: .03em; }
+  .family-name h3 { display: flex; align-items: center; justify-content: center; min-height: 2.4em; font-size: clamp(16px, 4.6vw, 23px); line-height: 1.2; margin-top: 6px; white-space: normal; text-wrap: balance; }
+  .family-career { margin-top: 8px; padding: 4px 12px; gap: 5px; font-size: 11px; }
+  .family-career::before { inset: -2px -7px; }
+  .family-career svg { width: 13px; height: 13px; }
+  .family-portrait { height: clamp(240px, 36svh, 330px); margin: 0; }
   .family-portrait-halo { inset: 12% 1% 3%; }
   .family-subject { filter: drop-shadow(6px 8px 8px #44322424); }
   .has-cutout .family-subject { filter: var(--family-cutout-outline) drop-shadow(6px 8px 8px #44322424); }
   .family-groom .has-cutout .family-subject { height: 100%; }
   .family-bride .has-cutout .family-subject { height: 230%; top: -16%; }
+  .family-bride .has-masked-original .family-subject { height: 300%; top: -61%; }
   .family-orbit { left: -8%; right: -8%; bottom: 16%; height: 15%; }
-  .family-initial { font-size: 36vw; top: 0; left: -3%; }
-  .family-bride .family-initial { right: -3%; }
   .family-portrait-caption { display: none; }
-  .family-heart { top: 55%; padding: 5px 7px; font-size: 16px; }
-}
-@media (max-height: 760px) and (max-width: 700px) {
-  .family-spread { top: 89px; bottom: 78px; }
-  .family-person { grid-template-rows: 206px minmax(0, 1fr); }
-  .family-bride .family-name { top: 98px; }
+  .family-heart { top: 55%; width: 24px; height: 24px; font-size: 18px; }
 }
 @media (max-height: 720px) and (min-width: 701px) {
   .family-spread { top: 100px; bottom: 75px; }
@@ -86,7 +87,6 @@
   .family-stage::before { display: block; }
   .family-person { opacity: 1; }
   .family-subject-frame { will-change: auto; }
-  .family-career-art path { stroke-dasharray: none!important; stroke-dashoffset: 0!important; }
 }
 @media (prefers-reduced-motion: reduce) and (max-width: 700px) {
   .family-stage { min-height: 800px; }

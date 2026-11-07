@@ -26,6 +26,8 @@ with sync_playwright() as p:
         assert page.locator('.wish-form input').first.evaluate('(el)=>parseFloat(getComputedStyle(el).fontSize)')>=16
         assert page.locator('.name-upper').evaluate('(el)=>parseFloat(getComputedStyle(el).fontSize)')<=120
         for selector,fraction,name in [('#home',0,'cover'),('#opening',.4,'letter'),('.reel-film',.53,'album'),('#couple',.3,'families'),('#couple',.95,'families-end'),('.wave-film',.9,'wave'),('#event',.16,'date-1'),('#event',.5,'date-2'),('#wishes',0,'wishes'),('#closing',1,'closing')]:
+            if width <= 700 and name.startswith('date-'):
+                selector = '.date-panel:nth-of-type(' + name.split('-')[1] + ')'
             seek(page,selector,fraction)
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,name)
             if width in [320,390,1440] or (height==600 and name in ['families','date-1']):page.screenshot(path=str(out/f'{width}x{height}-{name}.png'))
@@ -39,8 +41,9 @@ with sync_playwright() as p:
                     assert r['y']+r['height']<limit-4,(width,'family copy hits footer',r,limit)
                 assert page.locator('.family-name h3').evaluate_all('(els)=>els.every(el=>el.scrollWidth<=el.clientWidth+1)'),width
             if name.startswith('date-'):
-                limit=page.locator('.dates-stage .scene-hud').bounding_box()['y']
-                r=page.locator('.date-panel.is-active .date-main-copy').bounding_box()
+                panel = page.locator(selector) if width <= 700 else page.locator('.date-panel.is-active')
+                limit=(panel.locator('.scene-hud') if width <= 700 else page.locator('.dates-stage > .scene-hud')).bounding_box()['y']
+                r=panel.locator('.date-main-copy').bounding_box()
                 assert r['y']+r['height']<limit-4,(width,'date copy hits footer',r,limit)
         print(f'PASS {width}x{height}: readable type scale, complete names, family/event controls fit; no horizontal overflow.',flush=True)
         if width in [320,1440]:

@@ -14,7 +14,7 @@ Giao diện chuyển từ trang đọc sang các cảnh chiếm màn hình, đ�
 | Lịch cưới | Thiệp fullscreen xoay quanh cạnh trái, bóng theo góc mở; có khoảng dừng và thiệp chi tiết |
 | Xuyên suốt → kết | Chỉ đỏ SVG chạy qua các chương và nối vào hai vòng nhẫn ở cảnh cuối |
 
-Form lời chúc đứng yên khi viết, hỗ trợ giấy ghim/kéo thả desktop và mở đọc trên mobile. Cảnh cảm ơn cuối chiếm một màn hình. Các cảnh theo cuộn không khóa cuộn hoặc chặn wheel/touch. Riêng màn mở đầu giữ nội dung bên dưới tạm thời không nhận thao tác, rồi khôi phục cuộn và focus khi mở xong hoặc bỏ qua.
+Form lời chúc đứng yên khi viết, hỗ trợ giấy ghim/kéo thả desktop và mở đọc trên mobile. Cảnh cảm ơn cuối chiếm một màn hình. Desktop có độ đệm wheel ngắn, giữ nguyên quãng cuộn và nhường thao tác cho bàn phím, ô nhập, thanh cuộn và hộp thoại. Mobile dùng cuộn gốc; giảm chuyển động tắt độ đệm và vòng sáng con trỏ. Riêng màn mở đầu giữ nội dung bên dưới tạm thời không nhận thao tác, rồi khôi phục cuộn và focus khi mở xong hoặc bỏ qua.
 
 ## Dữ liệu và ảnh
 

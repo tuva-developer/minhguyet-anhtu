@@ -35,10 +35,21 @@ for role,asset in portraits.items():
     assert asset['sourceId'] in expected
     path=root/'public'/urlsplit(asset['src']).path.lstrip('/')
     with Image.open(path) as image:
-        assert image.mode=='RGBA' and image.getchannel('A').getextrema()==(0,255)
         assert image.size==(asset['width'],asset['height'])
+        if not asset.get('maskSrc'):
+            assert image.mode=='RGBA' and image.getchannel('A').getextrema()==(0,255)
+    if asset.get('maskSrc'):
+        assert asset['src']==assets[asset['sourceId']]['src'], 'Masked portraits must use the untouched photograph'
+        mask_path=root/'public'/urlsplit(asset['maskSrc']).path.lstrip('/')
+        assert hashlib.sha256(mask_path.read_bytes()).hexdigest().startswith(parse_qs(urlsplit(asset['maskSrc']).query)['v'][0])
+        with Image.open(mask_path) as mask:
+            assert mask.mode=='RGBA' and mask.getchannel('A').getextrema()==(0,255)
+            # The face must stay fully opaque: no synthesized RGB or facial holes.
+            w,h=mask.size
+            # SVG's 1.02 alpha gain makes this near-opaque interior fully opaque.
+            assert mask.getchannel('A').crop((int(w*.32),int(h*.27),int(w*.37),int(h*.31))).getextrema()[0]>=250
 assert not (root/'public/images/wedding').exists()
 assert not (root/'dist/images/wedding').exists()
 assert not (root/'public/images/portraits/bride-cutout.webp').exists()
 assert not (root/'public/images/portraits/groom-cutout.webp').exists()
-print(f'PASS: exact 40 selections, concept counts 11/15/8/6, {len(files)} valid responsive files, two new transparent portraits, unchanged source hashes, no old served photos.')
+print(f'PASS: exact 40 selections, concept counts 11/15/8/6, {len(files)} valid responsive files, valid portrait alpha/mask, untouched bride photo and source hashes, no old served photos.')

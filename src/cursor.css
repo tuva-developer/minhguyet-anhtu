@@ -1,0 +1,17 @@
+/* The native icon keeps an exact hotspot; a spring-driven aura follows softly. */
+.pointer-aura {
+  position: fixed; top: -18px; left: -18px; z-index: 2000;
+  width: 36px; height: 36px; border: 1px solid #d9b48f9c; border-radius: 50%;
+  background: radial-gradient(circle, #dfb99512, transparent 72%);
+  box-shadow: 0 0 14px #dfb99518; pointer-events: none; will-change: transform;
+}
+@media (min-width: 701px) and (hover: hover) and (pointer: fine) {
+  body { cursor: url('/cursors/ribbon.svg') 4 3, auto; }
+  a[href], button:not(:disabled), [role='button'], summary, select,
+  input[type='radio'], input[type='checkbox'], label[for] {
+    cursor: url('/cursors/ribbon-link.svg') 4 3, pointer;
+  }
+  input:not([type='radio']):not([type='checkbox']), textarea, [contenteditable='true'] { cursor: text; }
+  .pinned-note button { cursor: grab; }
+  .pinned-note button:active { cursor: grabbing; }
+}

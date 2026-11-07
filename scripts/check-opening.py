@@ -82,7 +82,7 @@ with sync_playwright() as p:
         assert page.evaluate('scrollY<2')
         page.screenshot(path=str(out/f'{width}-cover.png'))
         page.locator('.cinema-quick-date').click()
-        page.wait_for_function('Math.abs(document.getElementById("event").getBoundingClientRect().top)<5')
+        page.wait_for_function('()=>{const el=document.getElementById("event");return Math.abs(el.getBoundingClientRect().top-parseFloat(getComputedStyle(el).scrollMarginTop))<5}')
         assert page.locator('.opening-intro').count()==0
         print(f'PASS {width}px: thread drawing, paper reveal, interaction restored, no overflow or autoplay.',flush=True)
         page.close()

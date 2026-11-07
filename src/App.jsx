@@ -14,6 +14,8 @@ import { PhotoViewer, RSVP } from './components/Dialogs';
 import OpeningSequence, { shouldPlayOpening } from './components/OpeningSequence';
 import { OPENING_TIMELINE } from './lib/openingTimeline';
 import { prefersReduced } from './lib/motion';
+import { PresentationProvider } from './components/Scene';
+import DesktopMotion from './components/DesktopMotion';
 
 function Magazine() {
   const { site, photos } = useMedia();
@@ -55,7 +57,8 @@ function Magazine() {
     catch { setAudioError('Chưa phát được nhạc. Bạn thử bật lại nhé.'); }
     finally { setLoadingAudio(false); }
   }
-  return <LayoutGroup id="wedding-magazine">
+  return <PresentationProvider ready={!opening}><LayoutGroup id="wedding-magazine">
+    <DesktopMotion />
     <div className="wedding-content" inert={opening ? '' : undefined}>
     <a className="skip-link" href="#opening">Đến nội dung chính</a>
     <Header playing={playing} loading={loadingAudio} onMusic={toggleMusic} onRSVP={() => setModal('rsvp')} />
@@ -78,7 +81,7 @@ function Magazine() {
     </AnimatePresence>
     </div>
     {opening && <OpeningSequence progress={openingProgress} onReveal={startCoverReveal} onComplete={finishOpening} />}
-  </LayoutGroup>;
+  </LayoutGroup></PresentationProvider>;
 }
 
 export default function App({ site = wedding }) {

@@ -13,11 +13,12 @@ const captions = {
   BAO_5529: 'Có nhau trong đời', BAO_5922: 'Cùng một nhịp',
   BAO_6038: 'Một lời thương', BAO_6272: 'Ngày mình chung đôi',
   BAO_5613: 'Bình yên là có nhau',
+  BAO_5191: 'Nắm tay nhau',
 };
 // Keep all four concepts and the couple's exact selection order in the album.
 const photos = selection.concepts.flatMap(concept => concept.photos.map((code, index) => ({
   ...photo(code, `${code === 'BAO_4610' || code === 'BAO_4674' ? 'Minh Nguyệt trong váy cưới' : 'Anh Tú và Minh Nguyệt'} — ${concept.label}, ảnh ${index + 1}`,
-    captions[code] || `${concept.label} · Khoảnh khắc ${String(index + 1).padStart(2, '0')}`),
+    captions[code] || `${concept.label} · Khoảnh khắc ${String(index + 1).padStart(2, '0')}`, code === 'BAO_5191' ? '50% 50%' : undefined),
   conceptId: concept.id, conceptLabel: concept.label,
 })));
 
@@ -29,10 +30,10 @@ export const wedding = {
   // Set a role to null when no suitable image is available yet.
   heroPhoto: photo('BAO_5613', 'Anh Tú và Minh Nguyệt đứng đối diện nhau trong vườn hồng', 'Bình yên là có nhau'),
   couplePhoto: photo('BAO_5922', 'Anh Tú và Minh Nguyệt cùng tấm khăn voan cưới', 'Cùng một nhịp'),
-  albumLeadPhotoId: 'BAO_4848',
+  albumLeadPhotoId: 'BAO_5897',
   // Album exit selects an existing photo by ID; it need not be in a fixed slot.
   albumFinalPhotoId: 'BAO_5529',
-  albumPreviewPhotoIds: ['BAO_4848', 'BAO_6272', 'BAO_5529', 'BAO_6038', 'BAO_5019', 'BAO_5897'],
+  albumPreviewPhotoIds: ['BAO_5897', 'BAO_6272', 'BAO_5529', 'BAO_6038', 'BAO_5019', 'BAO_5191'],
   bridePortrait: {
     ...photo('BAO_4610', 'Cô dâu Lương Hoàng Minh Nguyệt', 'Minh Nguyệt'),
     cutout: portraitAssets.bride,

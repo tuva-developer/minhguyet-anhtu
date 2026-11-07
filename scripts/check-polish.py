@@ -26,7 +26,7 @@ with sync_playwright() as p:
         page = browser.new_page(viewport={'width': width, 'height': height}, device_scale_factor=dpr)
         page.on('pageerror', lambda e: errors.append(str(e)))
         open_site(page, args.url, wait_until='networkidle')
-        img = page.locator('.travel-cover-layer .cinema-subject')
+        img = page.locator('.travel-cover-layer .cinema-subject' if width > 700 else '.hero-window .cinema-subject')
         img.evaluate('(el)=>el.decode()')
         metrics = img.evaluate('''async el=>{const bitmap=await createImageBitmap(await (await fetch(el.currentSrc)).blob());const result={width:bitmap.width,height:bitmap.height,source:el.currentSrc,fit:getComputedStyle(el).objectFit};bitmap.close();return result;}''')
         site=page.evaluate('async()=>(await import("/src/data/site.js")).wedding')
@@ -37,7 +37,10 @@ with sync_playwright() as p:
         page.screenshot(path=str(out/f'{name}-polished-cover.png'), scale='css')
         seek(page, '.reel-film', .98)
         final=next(photo for photo in site['photos'] if photo['id']==site['albumFinalPhotoId'])
-        assert page.locator('.is-current .cinema-subject').evaluate('(el)=>getComputedStyle(el).objectFit') == expected_fit(final,width)
+        if width > 700:
+            assert page.locator('.is-current .cinema-subject').evaluate('(el)=>getComputedStyle(el).objectFit') == expected_fit(final,width)
+        else:
+            assert page.locator('.mobile-album-tile').count() == 4
         page.screenshot(path=str(out/f'{name}-polished-fullscreen.png'), scale='css')
         print(f'PASS {name} DPR {dpr}: native source and correct cinema image fit: {metrics}', flush=True)
         page.close()

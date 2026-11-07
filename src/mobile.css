@@ -1,0 +1,78 @@
+/* Mobile scenes use normal document flow. Motion is an entrance, not a scroll gate. */
+@media (max-width: 700px) {
+  .film-scene.hero-film, .film-scene.reading-film, .film-scene.montage-film,
+  .film-scene.family-film, .film-scene.wave-film, .film-scene.dates-film { height: auto !important; }
+  .film-stage { position: relative; top: auto; height: auto; min-height: 100svh; overflow: clip; }
+  .travel-photo { display: none; }
+  .film-stage .scene-hud { display: flex; position: absolute; left: 6%; right: 6%; bottom: 24px; gap: 14px; padding-bottom: 12px; border-bottom: 1px solid currentColor; }
+  .scene-hud > div:first-child { max-width: 62%; gap: 10px; }
+  .film-stage .scene-hud > div:first-child > span:last-child { display: block; font-size: 10px; line-height: 1.5; }
+  .scene-hud .hud-scroll { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: inherit; padding: 10px 0; font-size: 10px; line-height: 1.5; }
+  .scene-progress { display: none; }
+
+  .hero-stage { height: 100svh; min-height: 620px; }
+  .hero-stage .hero-window { inset: 0; width: 100%; height: 100%; visibility: visible; }
+  .hero-revelation { display: none; }
+
+  .reading-stage { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; min-height: 0; gap: 28px; padding: 88px 7% 100px; }
+  .reading-stage .reading-content { position: relative; grid-row: 2; left: auto; top: auto; width: 100%; max-width: none; opacity: 1; }
+  .reading-content > .cinema-kicker { font-size: 10px; max-width: none; margin-bottom: 18px; }
+  .reading-stage .reading-content h2 { font-size: clamp(35px, 9.6vw, 44px); line-height: 1.12; }
+  .reading-content > p { font-size: 13px; line-height: 1.85; max-width: none; }
+  .reading-rule { margin: 22px 0 18px; }
+  .reading-stage .reading-image { position: relative; grid-row: 1; justify-self: end; top: auto; right: auto; width: 58%; height: auto; rotate: 0deg; margin: 0; visibility: visible; }
+  .reading-image > img { width: 100%; height: clamp(170px, 26svh, 235px); object-fit: cover; object-position: 50% 25% !important; }
+  .reading-image figcaption { font-size: 15px; margin-top: 8px; }
+  .reading-backword { bottom: 4%; opacity: .45; }
+
+  .montage-stage { display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: 104px 6% 100px; }
+  .montage-stage .reel-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 8px 12px; position: relative; inset: auto; margin: 0; width: 100%; opacity: 1; }
+  .montage-stage .reel-heading > .cinema-kicker { grid-column: 1; font-size: 10px; line-height: 1.7; max-width: 230px; }
+  .montage-stage .reel-heading > p { grid-column: 1; font-size: clamp(29px, 8vw, 37px); margin: 0; line-height: 1.08; }
+  .montage-stage .reel-counter { position: static; grid-column: 2; grid-row: 1 / 3; min-width: 42px; font-size: 30px; }
+  .montage-stage .reel-counter small { font-size: 9px; line-height: 1.5; letter-spacing: .03em; }
+  .montage-stage .mobile-album-grid { position: relative; inset: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; height: clamp(360px, 52svh, 540px); width: 100%; pointer-events: auto; }
+  .montage-stage .mobile-album-grid.single-photo { grid-template-columns: minmax(0, 1fr); }
+  .mobile-album-grid .mobile-album-tile { position: relative; left: auto; top: auto; width: 100%; height: 100%; min-height: 0; margin: 0; translate: none; }
+  .mobile-album-tile .reel-photo-button, .mobile-album-tile .reel-surface { width: 100%; height: 100%; }
+  .mobile-album-tile .reel-surface > img { width: 100%; height: 100%; object-fit: cover; }
+  .mobile-album-tile .reel-photo-caption { position: absolute; bottom: 0; left: 0; right: 0; opacity: 1; font-size: 15px; line-height: 1.15; text-align: left; padding: 28px 8px 10px; background: linear-gradient(transparent, #1d1119c9); }
+  .mobile-album-tile .reel-photo-caption > small { font-size: 9px; }
+  .montage-stage .reel-controls { position: relative; inset: auto; width: 100%; margin: 0; justify-content: flex-start; }
+  .montage-stage .reel-contact-toggle { font-size: 12px; padding: 10px 0; }
+  .montage-stage .reel-contact-toggle > svg { width: 15px; }
+  .montage-ending, .montage-view-grid { display: none; }
+  #contact-sheet { scroll-margin-top: 76px; }
+
+  .family-stage { height: auto; min-height: 0; padding: 88px 6% 104px; }
+  .family-stage .scene-hud { color: var(--wine); }
+
+  .wave-stage { height: auto; min-height: 0; justify-content: flex-start; padding: 80px 5% 100px; gap: 24px; }
+  .wave-kicker { position: static; font-size: 10px; line-height: 1.7; text-align: center; }
+  .wave-type { padding: 0; font-size: 13vw; }
+  .wave-underline { margin: 0; }
+  .wave-caption { font-size: 10px; line-height: 1.8; margin: 0; max-width: 90%; }
+
+  .dates-film { scroll-margin-top: 66px; }
+  .dates-stage { height: auto; min-height: 0; perspective: none; overflow: visible; padding: 0; }
+  .mobile-date-nav { position: sticky; top: 66px; z-index: 30; display: flex; gap: 8px; padding: 4px 6%; background: #31131f; color: var(--paper); border-bottom: 1px solid #f4eee526; }
+  .mobile-date-nav button { flex: 1; min-width: 0; min-height: 44px; padding: 10px 0; background: transparent; border-bottom: 2px solid transparent; font-size: 11px; line-height: 1.5; color: inherit; }
+  .mobile-date-nav button[aria-current] { color: #e2b998; border-bottom-color: currentColor; }
+  .dates-stage .date-panel { position: relative; inset: auto; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 20px; min-height: 100svh; height: auto; padding: 0 7% 94px; scroll-margin-top: 119px; box-shadow: none; transform: none; pointer-events: auto; }
+  .date-panel::before { content: ''; grid-row: 1; height: 31svh; min-height: 180px; }
+  .date-panel .date-backdrop { top: 0; height: max(31svh, 180px); bottom: auto; transform-origin: left center; }
+  .date-panel .date-backdrop-shade { top: 0; bottom: auto; height: max(31svh, 180px); background: linear-gradient(180deg, #0000001f, transparent 45%, #00000014); pointer-events: none; }
+  .date-panel .date-scene-number { top: 24px; color: var(--paper); text-shadow: 0 1px 6px #0009; }
+  .date-panel .date-giant { position: relative; grid-row: 2; inset: auto; width: 100%; margin: 0; transform: none !important; }
+  .date-panel .date-main-copy { position: relative; grid-row: 3; inset: auto; width: 100%; margin: 0; }
+  .date-panel .date-main-copy h2 { font-size: clamp(38px, 10vw, 46px); }
+  .date-panel .date-actions { margin-top: 20px; }
+  .date-panel .date-rsvp-link { font-size: 13px; min-height: 44px; padding: 12px 0; }
+  .date-panel .scene-hud { grid-row: 4; color: inherit; }
+  .date-panel .scene-hud > div:first-child { max-width: 58%; }
+  .date-panel .scene-hud > div:first-child .hud-rule { display: block; }
+  .date-panel .scene-hud > div:first-child > span:last-child { display: block; }
+  .paper-fold-spine, .paper-fold-shade, .date-bottom-line { display: none; }
+
+  .colophon { min-height: 100svh; }
+}

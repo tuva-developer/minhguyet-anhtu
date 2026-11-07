@@ -1,5 +1,5 @@
 import LoveMark from './LoveMark';
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useId, useMemo, useState } from 'react';
 
 const MediaContext = createContext(null);
 
@@ -24,7 +24,7 @@ export function MediaProvider({ site, children }) {
     const photos = normalizePhotos(site.photos).filter(photo => !failed.has(photo.src));
     const available = photo => {
       if (!photo?.src || failed.has(photo.src)) return null;
-      return photo.cutout && failed.has(photo.cutout.src) ? { ...photo, cutout: null } : photo;
+      return photo.cutout && (failed.has(photo.cutout.src) || failed.has(photo.cutout.maskSrc)) ? { ...photo, cutout: null } : photo;
     };
     const cover = available(site.heroPhoto) || photos[0] || null;
     const couple = available(site.couplePhoto) || photos.find(photo => photo.src !== cover?.src) || null;
@@ -61,6 +61,27 @@ export function Photo({ photo, className = '', priority = false, onLoad, style, 
     style={{ aspectRatio: photo.width && photo.height ? `${photo.width} / ${photo.height}` : 'auto 2 / 3', objectPosition: photo.position || '50% 40%', ...style }}
     loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} decoding="async"
     onLoad={onLoad} onError={() => fail(photo.src)} />;
+}
+
+// A registered alpha matte hides the garden; every visible color pixel still
+// comes from the untouched photograph, including the actual face. Keep the mask
+// inside the SVG so the outer outline/shadow sees the resulting silhouette.
+export function CutoutPhoto({ photo, cutout, className = '', alt, sizes }) {
+  const maskId = useId();
+  const alphaId = `${maskId}-alpha`;
+  const { fail } = useMedia();
+  if (!cutout?.maskSrc) return <Photo photo={cutout || photo} className={className} alt={alt} sizes={sizes} />;
+  const { width, height } = photo;
+  return <svg className={className} viewBox={`0 0 ${width} ${height}`} width={width} height={height}
+    role="img" aria-label={alt} data-original-src={photo.src} style={{ aspectRatio: `${width} / ${height}` }}>
+    <defs>
+      <filter id={alphaId} colorInterpolationFilters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="1.02" /></feComponentTransfer></filter>
+      <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width={width} height={height} style={{ maskType: 'alpha' }}>
+        <image href={cutout.maskSrc} width={width} height={height} preserveAspectRatio="none" filter={`url(#${alphaId})`} onError={() => fail(cutout.maskSrc)} />
+      </mask>
+    </defs>
+    <image href={photo.src} width={width} height={height} mask={`url(#${maskId})`} onError={() => fail(photo.src)} />
+  </svg>;
 }
 
 // Portraits keep their detail on wide stages. A subdued ambient copy fills the

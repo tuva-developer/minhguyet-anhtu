@@ -8,7 +8,7 @@ Nguồn: `D:\Imgs\Prewedding`. Website dùng đúng 40 mã trong `src/data/prewe
 - Bản rộng 640/1280/1920px được tạo cùng ảnh để trình duyệt chọn theo màn hình và DPR qua `srcset`.
 - Áp dụng chiều EXIF và chuyển ICC sang sRGB. Metadata/kích thước nằm trong `src/data/photo-assets.json`; URL có mã SHA-256 để tránh cache ảnh cũ.
 - Chuyển đổi: `python scripts/convert-wedding-photos.py "D:\Imgs\Prewedding"`. Bảng nguồn, mã ảnh, kích thước và hash gốc nằm trong `artifacts/prewedding/conversion-manifest.json`.
-- Bìa: BAO_5613 (ảnh ngang, hai bạn đứng đối diện trong vườn hồng); mobile giữ cả hai người trong khung. Lời ngỏ: BAO_5922. Ảnh chính khi vào album: BAO_4848; khi rời album: BAO_5529. Ba cảnh đổi ảnh bằng crossfade trong cùng khung di chuyển.
+- Bìa: BAO_5613 (ảnh ngang, hai bạn đứng đối diện trong vườn hồng); mobile giữ cả hai người trong khung. Lời ngỏ: BAO_5922. Ảnh chính khi vào album: BAO_5897; khi rời album: BAO_5529. Ba cảnh đổi ảnh bằng crossfade trong cùng khung di chuyển.
 - Thiệp Vu Quy: BAO_6098; Tân Hôn: BAO_5070; Báo Hỷ: BAO_6400. Khai báo bằng `events[].photo`, không dùng lại ảnh bìa/lời ngỏ/chân dung hay nhóm ảnh xem trước. Ảnh lỗi chọn một ảnh còn chưa dùng; nếu hết ảnh sẽ dùng nền màu.
 - Ảnh album giữ nguyên thứ tự bốn bộ. Nhóm xem trước lấy đại diện cả bốn concept, độc lập với thứ tự album; không nhân bản ảnh để lấp ô.
 
@@ -16,17 +16,20 @@ Bộ WebP tạm trong `images/wedding/` và hai ảnh tách nền cũ đã đư�
 
 ## Chân dung tách nền mới
 
-Tạo bằng công cụ `image_gen` tích hợp, từ chính ảnh được chọn. Bản PNG trung gian giữ trong `artifacts/prewedding/`; bản web có alpha trong suốt, WebP chất lượng 94:
+Ảnh chú rể được tách bằng `image_gen`. Cô dâu dùng trực tiếp ảnh gốc BAO_4610 với mặt nạ alpha do `image_gen` tạo: màu sắc, khuôn mặt và biểu cảm đều lấy từ ảnh thật, không dùng RGB của ảnh chân dung được AI tạo lại.
 
-- `images/portraits/bao-4610-bride-cutout.webp`: từ BAO_4610, 1025 × 1535px.
+- `images/prewedding/bao-4610.webp`: ảnh cô dâu gốc 2561 × 3840px, giữ nguyên file/hash.
+- `images/portraits/bao-4610-bride-mask.png`: mặt nạ alpha 1025 × 1535px, giữ khung hình gốc; `CutoutPhoto` dùng SVG để áp mặt nạ lên ảnh thật. Tăng alpha 1,02 lần để phần mặt hoàn toàn đục, giữ nguyên màu ảnh gốc; không tô lại khuôn mặt.
 - `images/portraits/bao-6309-groom-cutout.webp`: từ BAO_6309, 1277 × 1231px.
 
-Kích thước, URL và mã ảnh nguồn nằm trong `src/data/portrait-assets.json`. Prompt đã dùng nằm trong `src/data/portrait-prompts.json`. Chỉ dùng ảnh tách nền ở phần giới thiệu hai bạn (Developer / Designer); nếu tải lỗi sẽ hiển thị ảnh chân dung nguồn được chọn.
+Kích thước, URL, mã ảnh nguồn và `maskSrc` nằm trong `src/data/portrait-assets.json`. Prompt mặt nạ đã dùng nằm trong `src/data/portrait-prompts.json`. Chỉ dùng ảnh tách nền ở phần giới thiệu hai bạn (Developer / Designer); nếu mặt nạ hoặc ảnh tách nền tải lỗi sẽ hiển thị ảnh chân dung gốc.
 
 Viền trắng 3px quanh phần alpha được vẽ bằng bộ lọc SVG trong `Families.jsx`, kết hợp bóng đổ CSS. Không sửa file ảnh; ảnh chân dung dự phòng có nền không áp dụng viền.
 
 ## Tài nguyên khác
 
+- `favicon.svg`: biểu tượng trái tim và sợi chỉ trên nền đỏ rượu, SVG tự vẽ; `favicon-32.png` và `apple-touch-icon.png` được render từ cùng SVG ở 32px và 180px.
+- `cursors/ribbon.svg`, `cursors/ribbon-link.svg`: con trỏ mũi tên có trái tim, SVG tự vẽ; dùng trên thiết bị có chuột, giữ con trỏ nhập chữ và kéo thả.
 - `images/banhbao/banhbao.png`: bé mèo của chủ website chạy theo sợi chỉ đỏ khi cuộn và theo đầu nét chỉ hình trái tim ở màn mở đầu. Cùng dùng `ThreadCat.jsx`; màn mở đầu đồng bộ với tiến độ vẽ SVG, không thêm bộ đếm thời gian riêng.
 - `music/audio.mp3`: nhạc chủ website, giữ nguyên và chỉ phát khi khách chủ động bật.
 - `video/flowers.mp4`: video minh hoạ cũ không dùng trong giao diện hiện tại.

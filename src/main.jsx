@@ -7,6 +7,8 @@ import './soi-duyen.css';
 import './typography.css';
 import './families.css';
 import './opening.css';
+import './mobile.css';
+import './cursor.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode><App /></React.StrictMode>

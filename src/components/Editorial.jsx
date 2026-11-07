@@ -1,20 +1,19 @@
 import LoveMark from './LoveMark';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowUp, ArrowUpRight } from 'lucide-react';
 import Reveal from './Reveal';
 import { goTo } from '../lib/motion';
+import { useScene } from './Scene';
 
 export function PageLabel({ number, children, light = false }) {
   return <div className={`page-label ${light ? 'on-dark' : ''}`}><span>CHƯƠNG {number}</span><span className="label-rule" /><span>{children}</span></div>;
 }
 
 export function Colophon({ onRSVP }) {
-  const ref = useRef(null);
-  const reduced = useReducedMotion();
+  const { ref, entranceProgress, reduced, compact } = useScene({ duration: 1.2 });
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
-  const first = useTransform(scrollYProgress, [.1, .72], [0, 1]);
-  const second = useTransform(scrollYProgress, [.32, .95], [0, 1]);
+  const first = useTransform(compact ? entranceProgress : scrollYProgress, [.1, .72], [0, 1]);
+  const second = useTransform(compact ? entranceProgress : scrollYProgress, [.32, .95], [0, 1]);
   return <footer ref={ref} className="colophon" id="closing" aria-label="Lời cảm ơn">
     <span className="eyebrow">THƯƠNG GỬI BẠN</span>
     <div className="closing-rings" aria-hidden="true"><svg viewBox="0 0 600 200">

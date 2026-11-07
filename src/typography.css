@@ -52,7 +52,7 @@ h1, h2, h3 { font-weight: 500; letter-spacing: -.025em; }
 .reading-content h2 > span { margin-right: .08em; }
 .reading-content > p { font-size: var(--type-body); line-height: 1.8; font-weight: 400; }
 .reading-image figcaption { font-size: 20px; line-height: 1.4; }
-.reading-backword { font-size: 30vw; }
+.reading-backword { left: 6%; right: 6%; font-size: 28vw; text-align: center; white-space: nowrap; }
 .montage-stage .reel-heading > .cinema-kicker { font-size: var(--type-label); max-width: 235px; line-height: 1.7; }
 .montage-stage .reel-heading > p { font-size: var(--type-section); line-height: 1.15; letter-spacing: -.025em; }
 .montage-stage .reel-counter { font-size: 32px; line-height: 1; min-width: 84px; }
@@ -62,7 +62,7 @@ h1, h2, h3 { font-weight: 500; letter-spacing: -.025em; }
 .montage-stage .reel-contact-toggle, .montage-view-grid { font-size: var(--type-control); line-height: 1.5; letter-spacing: .02em; }
 .montage-view-grid { gap: 14px; }
 .montage-ending { font-size: var(--type-display); line-height: 1.08; letter-spacing: -.03em; }
-.montage-stage .reel-background-type { font-size: 19vw; }
+
 .contact-sheet-heading { font-size: var(--type-label); line-height: 1.7; letter-spacing: .06em; }
 .contact-close { font-size: var(--type-control); line-height: 1.5; }
 .album-caption { font-size: 21px; line-height: 1.35; }
@@ -171,7 +171,6 @@ h1, h2, h3 { font-weight: 500; letter-spacing: -.025em; }
   .reading-content h2 { font-size: var(--type-story); line-height: 1.15; }
   .reading-content > p { font-size: 14px; line-height: 1.7; max-width: 100%; }
   .reading-rule { margin: 20px 0 16px; }
-  .reading-backword { font-size: 56vw; }
   .reading-image figcaption { font-size: 16px; }
   .montage-stage .reel-heading { top: 88px; display: grid; grid-template-columns: minmax(0, 1fr) 74px; gap: 6px 12px; align-items: start; }
   .montage-stage .reel-heading > .cinema-kicker { grid-column: 1; font-size: 10px; max-width: 190px; line-height: 1.6; letter-spacing: .05em; }

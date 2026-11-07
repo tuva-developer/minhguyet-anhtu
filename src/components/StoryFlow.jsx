@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { CinemaPhoto, useMedia } from './Media';
 import CoverCamera from './CoverCamera';
-import { useSoftScroll } from './Scene';
+import { usePresentation, useSoftScroll } from './Scene';
 import ThreadCat from './ThreadCat';
 
 const clamp = value => Math.max(0, Math.min(1, value));
@@ -18,11 +18,13 @@ export const useStoryFlow = () => useContext(StoryFlowContext);
 export function StoryFlow({ children, openingProgress }) {
   const ref = useRef(null);
   const { cover, couple, albumLead, photos } = useMedia();
+  const { compact } = usePresentation();
   const reduced = useReducedMotion();
   const { scrollY } = useScroll();
   const softY = useSoftScroll(scrollY, window.innerHeight * .85, .1);
   const [geometry, setGeometry] = useState(null);
   useEffect(() => {
+    if (compact) { setGeometry(null); return; }
     const root = ref.current;
     function measure() {
       const scene = selector => {
@@ -36,7 +38,7 @@ export function StoryFlow({ children, openingProgress }) {
     window.addEventListener('resize', measure);
     measure();
     return () => { observer.disconnect(); window.removeEventListener('resize', measure); };
-  }, [photos.length, scrollY]);
+  }, [photos.length, scrollY, compact]);
   const frame = useTransform(softY, value => {
     if (!geometry) return { x: 0, y: 0, width: 0, height: 0, rotate: 0, radius: 0, opacity: 0 };
     const { w, h, hero, letter, album } = geometry;
@@ -82,9 +84,9 @@ export function StoryFlow({ children, openingProgress }) {
     if (!cover || reduced) return 1;
     return geometry?.album && value >= geometry.album.top + geometry.album.travel * HANDOFF ? 1 : 0;
   });
-  return <StoryFlowContext.Provider value={{ albumProgress, albumPhotoOpacity, leadSrc: albumLead?.src }}><div ref={ref} className={`story-flow ${cover && !reduced ? 'has-travel-photo' : ''}`}>
+  return <StoryFlowContext.Provider value={compact ? null : { albumProgress, albumPhotoOpacity, leadSrc: albumLead?.src }}><div ref={ref} className={`story-flow ${cover && !reduced && !compact ? 'has-travel-photo' : ''}`}>
     {children}
-    {cover && !reduced && <motion.div className="travel-photo" aria-hidden="true" style={{ x, y, width, height, rotate, borderRadius, opacity }}>
+    {cover && !reduced && !compact && <motion.div className="travel-photo" aria-hidden="true" style={{ x, y, width, height, rotate, borderRadius, opacity }}>
       <div className="travel-photo-layer travel-cover-layer" data-photo-id={cover.id}><CoverCamera photo={cover} progress={openingProgress} scroll={softY} geometry={geometry} /></div>
       {couple && <motion.div className="travel-photo-layer travel-letter-layer" data-photo-id={couple.id} style={{ opacity: letterOpacity }}><CinemaPhoto photo={couple} priority decorative /></motion.div>}
       {albumLead && <motion.div className="travel-photo-layer travel-album-layer" data-photo-id={albumLead.id} style={{ opacity: leadOpacity }}><CinemaPhoto photo={albumLead} priority decorative /></motion.div>}

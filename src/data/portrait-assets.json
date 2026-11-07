@@ -1,9 +1,10 @@
 {
   "bride": {
-    "src": "/images/portraits/bao-4610-bride-cutout.webp?v=50263ca9f1",
-    "width": 1025,
-    "height": 1535,
-    "sourceId": "BAO_4610"
+    "src": "/images/prewedding/bao-4610.webp?v=24f6864773",
+    "width": 2561,
+    "height": 3840,
+    "sourceId": "BAO_4610",
+    "maskSrc": "/images/portraits/bao-4610-bride-mask.png?v=069502b232"
   },
   "groom": {
     "src": "/images/portraits/bao-6309-groom-cutout.webp?v=f190f8dfe9",
