@@ -1,0 +1,271 @@
+/* Shared type scale for the cinematic layout. Keep readable labels and body
+   copy at stable sizes; only display headings grow with the viewport. */
+.love-mark { display: inline-flex; align-items: center; justify-content: center; vertical-align: -.1em; line-height: 1; }
+.love-mark > svg { display: block; width: 1em; height: 1em; flex-shrink: 0; }
+.brand i .love-mark { font-size: .62em; }
+.invitation-couple i .love-mark { font-size: .65em; }
+:root {
+  --type-label: clamp(10px, .78vw, 12px);
+  --type-small: clamp(12px, .88vw, 14px);
+  --type-body: clamp(14px, 1.08vw, 16px);
+  --type-control: clamp(12px, .94vw, 14px);
+  --type-section: clamp(32px, 3.15vw, 48px);
+  --type-title: clamp(38px, 4.2vw, 64px);
+  --type-story: clamp(40px, 4.7vw, 68px);
+  --type-person: clamp(36px, 3.7vw, 58px);
+  --type-display: clamp(48px, 6.15vw, 88px);
+  --type-cover: clamp(64px, 8vw, 120px);
+}
+
+body { font-size: var(--type-body); line-height: 1.65; }
+h1, h2, h3 { font-weight: 500; letter-spacing: -.025em; }
+.button, .screen-button, .text-link { font-size: var(--type-control); line-height: 1.5; }
+.eyebrow, .cinema-kicker, .page-label { font-size: var(--type-label); line-height: 1.7; letter-spacing: .11em; }
+.section-bottom { font-size: var(--type-label); line-height: 1.7; letter-spacing: .06em; }
+
+/* Masthead: readable controls, with a compact secondary signature. */
+.brand > span { font-size: 24px; line-height: 1.12; letter-spacing: -.025em; }
+.brand small { font-size: 9px; line-height: 1.35; letter-spacing: .08em; margin-top: 5px; }
+.desktop-contents { gap: 20px; }
+.desktop-contents button, .sound-button, .header-rsvp { font-size: 12px; line-height: 1.5; }
+.header-actions { gap: 18px; }
+.header-rsvp { padding: 12px 15px; }
+
+/* Equal name sizes; the complete names remain readable below the display. */
+.cinema-names h1 { line-height: 1.06; letter-spacing: -.035em; }
+.name-upper, .name-lower { font-size: var(--type-cover); line-height: 1.08; }
+.name-enter { display: block; }
+.name-upper { top: 28%; left: 6%; }
+.name-lower { bottom: 24%; right: 6%; }
+.hero-prelude { font-size: var(--type-label); line-height: 1.7; letter-spacing: .12em; }
+
+.hero-revelation > p { font-size: var(--type-display); line-height: 1.08; letter-spacing: -.03em; }
+.hero-revelation .hero-promise { font-size: var(--type-body); line-height: 1.75; max-width: 390px; }
+.cinema-quick-date { font-size: 19px; line-height: 1.35; }
+.cinema-quick-date > span { font-size: var(--type-label); line-height: 1.5; letter-spacing: .07em; }
+.hero-year { font-size: clamp(150px, 19vw, 280px); }
+.hero-film { --thread-cat-lane: .80; }
+
+/* Story and album headings share the same rhythm and restrained spacing. */
+.reading-content > .cinema-kicker { font-size: var(--type-label); margin-bottom: 26px; }
+.reading-content h2 { font-size: var(--type-story); line-height: 1.15; letter-spacing: -.025em; text-wrap: balance; }
+.reading-content h2 > span { margin-right: .08em; }
+.reading-content > p { font-size: var(--type-body); line-height: 1.8; font-weight: 400; }
+.reading-image figcaption { font-size: 20px; line-height: 1.4; }
+.reading-backword { font-size: 30vw; }
+.montage-stage .reel-heading > .cinema-kicker { font-size: var(--type-label); max-width: 235px; line-height: 1.7; }
+.montage-stage .reel-heading > p { font-size: var(--type-section); line-height: 1.15; letter-spacing: -.025em; }
+.montage-stage .reel-counter { font-size: 32px; line-height: 1; min-width: 84px; }
+.reel-counter small { font-size: 10px; line-height: 1.45; letter-spacing: .04em; margin-top: 7px; }
+.montage-tile .reel-photo-caption { font-size: clamp(18px, 1.4vw, 22px); line-height: 1.25; }
+.montage-tile .reel-photo-caption > small { font-size: 10px; line-height: 1.4; }
+.montage-stage .reel-contact-toggle, .montage-view-grid { font-size: var(--type-control); line-height: 1.5; letter-spacing: .02em; }
+.montage-view-grid { gap: 14px; }
+.montage-ending { font-size: var(--type-display); line-height: 1.08; letter-spacing: -.03em; }
+.montage-stage .reel-background-type { font-size: 19vw; }
+.contact-sheet-heading { font-size: var(--type-label); line-height: 1.7; letter-spacing: .06em; }
+.contact-close { font-size: var(--type-control); line-height: 1.5; }
+.album-caption { font-size: 21px; line-height: 1.35; }
+.album-caption small { font-size: 10px; line-height: 1.5; }/* Family names are a clear heading, with parents and addresses large enough to read. */
+.wave-kicker { font-size: var(--type-label); letter-spacing: .12em; }
+.wave-type { font-size: clamp(48px, 6.7vw, 96px); line-height: 1.25; letter-spacing: -.035em; padding: 4% 0; }
+.wave-caption { font-size: var(--type-label); line-height: 1.7; letter-spacing: .08em; }
+
+/* Calendar figures stay expressive without dwarfing the event information. */
+.date-scene-number { font-size: var(--type-label); letter-spacing: .1em; }
+.date-main-copy > .cinema-kicker { font-size: var(--type-label); line-height: 1.7; }
+.date-main-copy h2 { font-size: var(--type-title); line-height: 1.08; letter-spacing: -.025em; margin-top: 20px; }
+.date-venue { font-size: clamp(21px, 1.7vw, 26px); line-height: 1.4; }
+.date-primary-time { gap: 10px 24px; margin-top: 30px; }
+.date-primary-time > span { font-size: var(--type-label); line-height: 1.6; max-width: 155px; letter-spacing: .07em; }
+.date-primary-time > strong { font-size: clamp(40px, 3.8vw, 56px); line-height: 1.05; letter-spacing: -.025em; }
+.date-primary-time > small { font-size: var(--type-small); line-height: 1.65; margin-top: 4px; }
+.date-actions { margin-top: 26px; gap: 20px; }
+.date-rsvp-link { font-size: var(--type-control); line-height: 1.5; }
+.date-giant { top: 24%; right: 8%; width: 30%; }
+.date-giant time { font-size: clamp(120px, 12vw, 180px); line-height: .88; letter-spacing: -.05em; }
+.date-giant time small { font-size: 14px; letter-spacing: .12em; }
+.date-giant > p { font-size: var(--type-label); line-height: 1.7; letter-spacing: .1em; margin-top: 24px; }
+.date-bottom-line { font-size: var(--type-label); letter-spacing: .07em; }
+.scene-hud { font-size: var(--type-label); line-height: 1.65; letter-spacing: .05em; }
+.scene-hud > div:first-child > span:first-child { font-size: 24px; line-height: 1; }
+.scene-hud > div:first-child > span:last-child { font-size: var(--type-label); line-height: 1.6; letter-spacing: .05em; }
+.hud-scroll { font-size: var(--type-label); line-height: 1.6; letter-spacing: .04em; }
+.scene-tabs button { font-size: var(--type-label); line-height: 1.5; letter-spacing: .04em; opacity: .7; }
+.date-tabs button { font-size: 12px; line-height: 1.5; letter-spacing: 0; }
+
+/* Forms, messages and dialogs use the same readable supporting sizes. */
+.letter-form-wrap h2 { font-size: var(--type-section); line-height: 1.13; letter-spacing: -.025em; }
+.letter-form-wrap > p, .rsvp-success p, .colophon p { font-size: var(--type-body); line-height: 1.8; font-weight: 400; }
+.wish-form > label, .rsvp-form legend { font-size: var(--type-label); line-height: 1.6; letter-spacing: .08em; }
+.wish-form input:not([type=radio]), .wish-form textarea, .wish-form select { font-size: 16px; line-height: 1.7; }
+.rsvp-form fieldset label { font-size: 14px; line-height: 1.7; }
+.form-status { font-size: 14px; line-height: 1.65; }
+.storage-note, .board-hint, .empty-notes { font-size: 12px; line-height: 1.7; }
+.wish-board-heading { font-size: 11px; line-height: 1.7; letter-spacing: .04em; }
+.wish-board-heading small { font-size: 12px; }
+.board-handwriting { font-size: 26px; line-height: 1.3; }
+.pinned-note small { font-size: 10px; line-height: 1.5; }
+.pinned-note p { font-size: 23px; line-height: 1.3; }
+.note-from { font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.colophon > .eyebrow { font-size: var(--type-label); line-height: 1.7; letter-spacing: .1em; }
+.closing-rings { width: min(420px, 82%); margin: 16px auto 28px; }
+.closing-rings > span { font-size: 20px; line-height: 1.4; }
+.closing-copy { width: 100%; max-width: 680px; margin-inline: auto; }
+.colophon h2 { font-size: var(--type-title); line-height: 1.15; letter-spacing: -.025em; text-wrap: balance; }
+.closing-copy h2 em { font-weight: 400; color: #e9c9a8; }
+.colophon .closing-copy p { max-width: 510px; margin: 24px auto 0; text-wrap: pretty; }
+.colophon .closing-copy p + p { margin-top: 10px; }
+.colophon-bottom { font-size: 10px; line-height: 1.7; letter-spacing: .04em; }
+.colophon-bottom button { font-size: 12px; line-height: 1.5; }
+.modal-content h2 { font-size: var(--type-section); line-height: 1.15; letter-spacing: -.025em; }
+.contents-dialog nav button { font-size: 28px; line-height: 1.2; }
+.contents-dialog nav button > small { font-size: 11px; }
+.viewer-heading { font-size: 11px; line-height: 1.5; letter-spacing: .06em; }
+.viewer-heading small, .photo-caption > small { font-size: 12px; }
+.photo-caption { font-size: 22px; line-height: 1.3; }
+.slideshow-button { font-size: 13px; line-height: 1.5; }
+.invitation-dialog .eyebrow { font-size: var(--type-label); }
+.invitation-couple { font-size: 27px; line-height: 1.25; }
+.invitation-modal-date { font-size: 24px; line-height: 1.4; }
+.invitation-dialog .lunar-date { font-size: 19px; line-height: 1.6; }
+.invitation-dialog .event-address, .invitation-dialog .reception-time { font-size: 14px; line-height: 1.75; }
+.invitation-dialog .text-link { font-size: 13px; line-height: 1.6; }
+.inside-signature { font-size: 22px; line-height: 1.4; }
+.full-wish { font-size: 26px; line-height: 1.45; }
+.note-dialog > small { font-size: 12px; }
+.audio-notice { font-size: 13px; line-height: 1.65; }
+
+@media (max-width: 1150px) {
+  .desktop-contents { gap: 13px; }
+  .brand > span { font-size: 22px; }
+  .header-actions { gap: 13px; }
+  .sound-button > span:not(.sound-bars) { display: none; }
+}
+
+@media (max-width: 700px) {
+  .hero-film, .reading-film, .profiles-film, .dates-film { --thread-cat-lane: .88; }
+  :root {
+    --type-section: clamp(30px, 8vw, 38px);
+    --type-title: clamp(34px, 9.2vw, 44px);
+    --type-story: clamp(32px, 8.7vw, 40px);
+    --type-person: clamp(26px, 6.5vw, 34px);
+    --type-display: clamp(40px, 10.2vw, 54px);
+    --type-cover: clamp(42px, 12vw, 64px);
+  }
+  .brand > span { font-size: clamp(19px, 5.6vw, 23px); line-height: 1.12; }
+  .brand small { font-size: 9px; line-height: 1.3; letter-spacing: .05em; }
+  .hero-prelude { font-size: 10px; letter-spacing: .08em; max-width: 88%; }
+  .name-upper, .name-lower { font-size: var(--type-cover); line-height: 1.1; }
+  .name-upper { top: 30%; }
+  .name-lower { bottom: 26%; }
+
+  .hero-revelation > p { font-size: var(--type-display); line-height: 1.12; }
+  .hero-revelation > .cinema-kicker { font-size: 10px; }
+  .hero-revelation .hero-promise { font-size: 14px; line-height: 1.7; max-width: 280px; }
+  .cinema-quick-date { display: grid; grid-template-columns: auto 16px; gap: 5px 10px; font-size: 17px; }
+  .cinema-quick-date > span { grid-column: 1 / -1; font-size: 10px; text-align: left; }
+  .hero-year { font-size: 42vw; }
+  .reading-content { top: 49%; translate: 0 0; }
+  .reading-content > .cinema-kicker { font-size: 10px; margin-bottom: 14px; max-width: none; }
+  .reading-content h2 { font-size: var(--type-story); line-height: 1.15; }
+  .reading-content > p { font-size: 14px; line-height: 1.7; max-width: 100%; }
+  .reading-rule { margin: 20px 0 16px; }
+  .reading-backword { font-size: 56vw; }
+  .reading-image figcaption { font-size: 16px; }
+  .montage-stage .reel-heading { top: 88px; display: grid; grid-template-columns: minmax(0, 1fr) 74px; gap: 6px 12px; align-items: start; }
+  .montage-stage .reel-heading > .cinema-kicker { grid-column: 1; font-size: 10px; max-width: 190px; line-height: 1.6; letter-spacing: .05em; }
+  .montage-stage .reel-heading > p { grid-column: 1 / -1; grid-row: 2; margin: 0; font-size: clamp(26px, 7.4vw, 32px); line-height: 1.12; }
+  .montage-stage .reel-counter { position: static; grid-column: 2; grid-row: 1; font-size: 26px; min-width: 0; }
+  .reel-counter small { font-size: 10px; line-height: 1.4; letter-spacing: 0; margin-top: 4px; }
+  .montage-tile .reel-photo-caption { font-size: 17px; line-height: 1.25; gap: 7px; padding: 28px 9px 10px; }
+  .montage-tile .reel-photo-caption > small { font-size: 10px; }
+  .montage-stage .reel-contact-toggle, .montage-view-grid { font-size: 11px; line-height: 1.5; gap: 8px; letter-spacing: 0; }
+  .montage-view-grid { max-width: 45%; text-align: right; }
+  .montage-ending { font-size: var(--type-display); line-height: 1.1; }
+  .contact-sheet-heading { font-size: 10px; }
+  .album-caption { font-size: 19px; line-height: 1.3; }
+  .album-caption small { font-size: 10px; padding-top: 2px; }
+  .wave-kicker { font-size: 10px; letter-spacing: .08em; }
+  .wave-type { font-size: clamp(34px, 9.1vw, 48px); line-height: 1.3; letter-spacing: -.025em; }
+  .wave-caption { font-size: 10px; line-height: 1.7; letter-spacing: .04em; }
+  .date-scene-number { font-size: 10px; }
+  .date-giant { top: 16%; right: 9%; width: 40%; }
+  .date-giant time { font-size: clamp(80px, 25vw, 112px); line-height: .88; }
+  .date-giant time small { font-size: 12px; letter-spacing: .08em; }
+  .date-giant > p { font-size: 11px; line-height: 1.5; margin-top: 18px; }
+  .date-main-copy { top: 46%; }
+  .date-main-copy > .cinema-kicker { font-size: 10px; letter-spacing: .06em; }
+  .date-main-copy h2 { font-size: var(--type-title); margin-top: 12px; }
+  .date-venue { font-size: 20px; line-height: 1.4; }
+  .date-primary-time { gap: 8px 18px; margin-top: 20px; }
+  .date-primary-time > span { font-size: 10px; line-height: 1.55; max-width: 130px; letter-spacing: .04em; }
+  .date-primary-time > strong { font-size: 40px; line-height: 1.05; }
+  .date-primary-time > small { font-size: 12px; line-height: 1.6; }
+  .date-actions { margin-top: 18px; gap: 12px; }
+  .screen-button { font-size: 12px; padding: 12px 14px; gap: 16px; }
+  .date-rsvp-link { font-size: 12px; gap: 8px; }
+  .scene-hud { gap: 12px; font-size: 10px; }
+  .scene-hud > div:first-child { gap: 8px; }
+  .scene-hud > div:first-child > span:first-child { font-size: 22px; }
+  .scene-hud > div:first-child > span:last-child { font-size: 10px; line-height: 1.5; letter-spacing: .02em; }
+  .hud-rule { width: 18px; }
+  .hud-scroll { font-size: 10px; line-height: 1.5; letter-spacing: .01em; gap: 8px; }
+  .scene-tabs { gap: 14px; }
+  .scene-tabs button, .profiles-stage .scene-tabs button { font-size: 10px; line-height: 1.5; letter-spacing: 0; }
+  .profiles-stage .scene-hud > div:first-child > span:last-child { display: none; }
+  .date-tabs { gap: 12px; }
+  .date-tabs button { font-size: 10px; line-height: 1.5; }
+  .wish-board-heading { font-size: 10px; }
+  .wish-board-heading small { font-size: 11px; }
+  .board-handwriting { font-size: 22px; }
+  .pinned-note p { font-size: 22px; line-height: 1.3; }
+  .pinned-note small { font-size: 10px; }
+  .note-from { font-size: 11px; line-height: 1.6; }
+  .letter-form-wrap h2 { font-size: var(--type-section); line-height: 1.15; }
+  .letter-form-wrap > p { font-size: 14px; }
+  .letter-form-bottom .button, .load-more .button { font-size: 12px; }
+  .colophon { padding: 90px 20px 160px; }
+  .colophon > .eyebrow { font-size: 10px; letter-spacing: .06em; }
+  .closing-rings { width: 82%; margin: 12px auto 24px; }
+  .closing-rings > span { font-size: 18px; }
+  .colophon h2 { font-size: var(--type-title); line-height: 1.18; }
+  .colophon p { font-size: 14px; line-height: 1.8; }
+  .colophon-bottom { font-size: 10px; line-height: 1.6; gap: 10px; letter-spacing: .03em; }
+  .colophon-bottom button { font-size: 12px; }
+  .modal-content h2 { font-size: var(--type-section); line-height: 1.15; }
+  .contents-dialog nav button { font-size: 26px; }
+  .viewer-heading { font-size: 10px; }
+  .viewer-heading small, .photo-caption > small { font-size: 11px; }
+  .photo-caption { font-size: 20px; line-height: 1.3; }
+  .slideshow-button { font-size: 12px; }
+  .invitation-couple { font-size: 24px; line-height: 1.25; }
+  .invitation-modal-date { font-size: 22px; line-height: 1.4; }
+  .invitation-dialog .lunar-date { font-size: 18px; }
+  .invitation-dialog .event-address, .invitation-dialog .reception-time { font-size: 14px; line-height: 1.75; }
+  .invitation-dialog .text-link { font-size: 12px; }
+  .full-wish { font-size: 24px; line-height: 1.45; }
+}
+
+@media (max-width: 360px) {
+  .brand > span { font-size: 19px; }
+  .brand small { font-size: 9px; }
+  .montage-stage .reel-heading > .cinema-kicker { display: none; }
+  .montage-stage .reel-heading { gap: 6px 10px; }
+}
+
+@media (max-height: 700px) and (min-width: 701px) {
+  .name-upper, .name-lower { font-size: clamp(60px, 11svh, 88px); }
+  .hero-revelation > p { font-size: clamp(48px, 9svh, 64px); }
+  .date-main-copy h2 { font-size: 48px; }
+  .date-giant time { font-size: 132px; }
+  .wave-type { font-size: clamp(48px, 12svh, 80px); }
+  .colophon h2 { font-size: 42px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .montage-stage .reel-heading { top: auto; }
+  .montage-tile .reel-photo-caption { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 700px) {
+}

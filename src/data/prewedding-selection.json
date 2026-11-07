@@ -1,0 +1,8 @@
+{
+  "concepts": [
+    { "id": "concept-1", "label": "Bộ 1", "photos": ["BAO_4610", "BAO_4674", "BAO_4760", "BAO_4848", "BAO_4881", "BAO_4977", "BAO_5019", "BAO_5025", "BAO_5041", "BAO_5070", "BAO_5117"] },
+    { "id": "concept-2", "label": "Bộ 2", "photos": ["BAO_5191", "BAO_5271", "BAO_5287", "BAO_5348", "BAO_5529", "BAO_5550", "BAO_5599", "BAO_5613", "BAO_5735", "BAO_5767", "BAO_5801", "BAO_5840", "BAO_5897", "BAO_5911", "BAO_5922"] },
+    { "id": "concept-3", "label": "Bộ 3", "photos": ["BAO_6000", "BAO_6038", "BAO_6059", "BAO_6090", "BAO_6098", "BAO_6125", "BAO_6189", "BAO_6205"] },
+    { "id": "concept-4", "label": "Bộ 4", "photos": ["BAO_6241", "BAO_6272", "BAO_6309", "BAO_6400", "BAO_6431", "BAO_6475"] }
+  ]
+}

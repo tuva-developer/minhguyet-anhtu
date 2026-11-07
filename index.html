@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Disable restoration before layout/React can resume a reload mid-scene.
+      (() => {
+        if (performance.getEntriesByType('navigation')[0]?.type !== 'reload') return;
+        if ('scrollRestoration' in history) {
+          const previous = history.scrollRestoration;
+          history.scrollRestoration = 'manual';
+          addEventListener('pagehide', () => { history.scrollRestoration = previous; }, { once: true });
+        }
+        if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      })();
+    </script>
+    <meta name="theme-color" content="#1D1119" />
+    <meta name="description" content="Trân trọng kính mời chung vui cùng Võ Anh Tú và Lương Hoàng Minh Nguyệt. Lễ Vu Quy 26.12.2026, Lễ Tân Hôn 03.01.2027, Tiệc Báo Hỷ 30.01.2027." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <title>Anh Tú &#9829; Minh Nguyệt — Sợi duyên</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

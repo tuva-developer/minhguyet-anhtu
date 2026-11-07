@@ -1,0 +1,43 @@
+/* Two softly folded curtains reveal the live cover on the shared opening clock. */
+.opening-intro { position: fixed; inset: 0; z-index: 150; overflow: hidden; display: grid; place-items: center; color: var(--wine); isolation: isolate; outline: none; }
+.intro-paper { position: absolute; top: -4%; bottom: -4%; width: calc(50% + 2px); z-index: -1; background-color: var(--paper); background-image: radial-gradient(ellipse at 50% 45%, #fffaf280, transparent 65%), repeating-linear-gradient(90deg, #fff8 0, #bca58a12 30px, #fff5 56px, #bca58a0a 82px); will-change: transform; }
+.intro-paper-left { left: 0; transform-origin: 0 50%; box-shadow: inset -1px 0 #a98c651a; }
+.intro-paper-right { right: 0; transform-origin: 100% 50%; }
+.intro-paper::after { content: ''; position: absolute; inset: 5% 0; border-block: 1px solid #a98c6530; pointer-events: none; }
+.intro-content { width: min(760px, 88%); margin-top: -3vh; text-align: center; pointer-events: none; }
+.intro-eyebrow { display: block; font: 400 11px/1.7 var(--sans); letter-spacing: .24em; }
+.intro-thread { display: block; width: 100%; height: auto; margin: -6px auto 18px; overflow: visible; fill: none; stroke: #a33e50; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.intro-thread circle { fill: #b84257; stroke: none; filter: drop-shadow(0 0 5px #b8425755); }
+.intro-cat-layer { overflow: visible; pointer-events: none; }
+.intro-title { font: 500 clamp(40px, 4.6vw, 68px)/1.1 var(--serif); letter-spacing: -.035em; }
+.intro-title em { display: inline-block; font: 300 .56em/1.7 var(--sans); font-style: normal; letter-spacing: -.025em; color: #946d53; }
+.intro-caption { display: block; margin-top: 23px; font: 400 12px/1.8 var(--sans); color: #79665b; }
+.intro-bottom { position: absolute; left: 6%; right: 6%; bottom: max(30px, env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 20px; font: 400 11px/1.7 var(--sans); letter-spacing: .04em; }
+.intro-bottom > span { color: #79665b; }
+.intro-bottom button { background: transparent; color: var(--wine); display: flex; align-items: center; gap: 18px; padding: 13px 0; border-bottom: 1px solid #6f203140; font-size: 12px; min-height: 44px; }
+.intro-bottom button:disabled { opacity: 1; cursor: default; }
+.intro-bottom button:focus-visible { outline: 2px solid var(--wine); outline-offset: 5px; }
+@media (max-width: 700px) {
+  .intro-content { width: 90%; margin-top: -4vh; }
+  .intro-eyebrow { font-size: 10px; letter-spacing: .17em; }
+  .intro-thread { width: 120%; margin: 20px -10% 30px; stroke-width: 2; }
+  .intro-title { font-size: clamp(40px, 10vw, 56px); line-height: 1.15; }
+  .intro-caption { font-size: 12px; max-width: 230px; margin: 20px auto 0; }
+  .intro-bottom { left: 7%; right: 7%; bottom: max(25px, env(safe-area-inset-bottom)); gap: 20px; flex-direction: column; }
+  .intro-bottom > span { font-size: 10px; }
+  .intro-bottom button { gap: 14px; }
+}
+@media (max-height: 600px) and (min-width: 701px) {
+  .intro-content { width: min(570px, 75%); }
+  .intro-thread { margin-top: -25px; margin-bottom: 0; }
+  .intro-title { font-size: 44px; }
+  .intro-caption { margin-top: 15px; }
+}
+@media (max-height: 480px) and (min-width: 701px) {
+  .intro-content { width: min(400px, 65%); margin-top: -20px; }
+  .intro-thread { margin: -12px auto 8px; }
+  .intro-title { font-size: 34px; }
+  .intro-caption { display: none; }
+  .intro-eyebrow { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .opening-intro { display: none; } }

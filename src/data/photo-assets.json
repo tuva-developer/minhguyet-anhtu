@@ -1,0 +1,322 @@
+{
+  "BAO_4610": {
+    "src": "/images/prewedding/bao-4610.webp?v=24f6864773",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-4610-640.webp?v=08dc7870ea 640w, /images/prewedding/bao-4610-1280.webp?v=eba3b1865a 1280w, /images/prewedding/bao-4610-1920.webp?v=1af3cc2d0b 1920w, /images/prewedding/bao-4610.webp?v=24f6864773 2561w",
+    "sourceId": "BAO_4610",
+    "concept": "concept-1"
+  },
+  "BAO_4674": {
+    "src": "/images/prewedding/bao-4674.webp?v=b2a610099a",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-4674-640.webp?v=4f9f8e38b5 640w, /images/prewedding/bao-4674-1280.webp?v=b002539183 1280w, /images/prewedding/bao-4674-1920.webp?v=9b00c37a14 1920w, /images/prewedding/bao-4674.webp?v=b2a610099a 2561w",
+    "sourceId": "BAO_4674",
+    "concept": "concept-1"
+  },
+  "BAO_4760": {
+    "src": "/images/prewedding/bao-4760.webp?v=9ca2be491b",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-4760-640.webp?v=55ff8e82ea 640w, /images/prewedding/bao-4760-1280.webp?v=635aec11fb 1280w, /images/prewedding/bao-4760-1920.webp?v=7d3da2f86c 1920w, /images/prewedding/bao-4760.webp?v=9ca2be491b 2561w",
+    "sourceId": "BAO_4760",
+    "concept": "concept-1"
+  },
+  "BAO_4848": {
+    "src": "/images/prewedding/bao-4848.webp?v=1966898029",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-4848-640.webp?v=17d17b6fdd 640w, /images/prewedding/bao-4848-1280.webp?v=b5bf9ff071 1280w, /images/prewedding/bao-4848-1920.webp?v=06f1a19d70 1920w, /images/prewedding/bao-4848.webp?v=1966898029 2561w",
+    "sourceId": "BAO_4848",
+    "concept": "concept-1"
+  },
+  "BAO_4881": {
+    "src": "/images/prewedding/bao-4881.webp?v=597ed8b6bd",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-4881-640.webp?v=9439188c23 640w, /images/prewedding/bao-4881-1280.webp?v=cf94154e74 1280w, /images/prewedding/bao-4881-1920.webp?v=d53ce8c021 1920w, /images/prewedding/bao-4881.webp?v=597ed8b6bd 3840w",
+    "sourceId": "BAO_4881",
+    "concept": "concept-1"
+  },
+  "BAO_4977": {
+    "src": "/images/prewedding/bao-4977.webp?v=99b9e55f1c",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-4977-640.webp?v=8419502b6a 640w, /images/prewedding/bao-4977-1280.webp?v=f535f07df3 1280w, /images/prewedding/bao-4977-1920.webp?v=f9a1cc9df4 1920w, /images/prewedding/bao-4977.webp?v=99b9e55f1c 2561w",
+    "sourceId": "BAO_4977",
+    "concept": "concept-1"
+  },
+  "BAO_5019": {
+    "src": "/images/prewedding/bao-5019.webp?v=8eb1de6bf4",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-5019-640.webp?v=9431bdbdb2 640w, /images/prewedding/bao-5019-1280.webp?v=ee76130422 1280w, /images/prewedding/bao-5019-1920.webp?v=733b678dce 1920w, /images/prewedding/bao-5019.webp?v=8eb1de6bf4 3840w",
+    "sourceId": "BAO_5019",
+    "concept": "concept-1"
+  },
+  "BAO_5025": {
+    "src": "/images/prewedding/bao-5025.webp?v=1148f61bc1",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5025-640.webp?v=16a8f4581e 640w, /images/prewedding/bao-5025-1280.webp?v=f2550edd20 1280w, /images/prewedding/bao-5025-1920.webp?v=5e9e0a5d6a 1920w, /images/prewedding/bao-5025.webp?v=1148f61bc1 2561w",
+    "sourceId": "BAO_5025",
+    "concept": "concept-1"
+  },
+  "BAO_5041": {
+    "src": "/images/prewedding/bao-5041.webp?v=7108949e66",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-5041-640.webp?v=64fdf6d0ad 640w, /images/prewedding/bao-5041-1280.webp?v=f86c601841 1280w, /images/prewedding/bao-5041-1920.webp?v=d3cf9264d6 1920w, /images/prewedding/bao-5041.webp?v=7108949e66 3840w",
+    "sourceId": "BAO_5041",
+    "concept": "concept-1"
+  },
+  "BAO_5070": {
+    "src": "/images/prewedding/bao-5070.webp?v=cff10e0fea",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-5070-640.webp?v=9b7d22c514 640w, /images/prewedding/bao-5070-1280.webp?v=86e8f86469 1280w, /images/prewedding/bao-5070-1920.webp?v=2890f0304c 1920w, /images/prewedding/bao-5070.webp?v=cff10e0fea 3840w",
+    "sourceId": "BAO_5070",
+    "concept": "concept-1"
+  },
+  "BAO_5117": {
+    "src": "/images/prewedding/bao-5117.webp?v=01ccbac434",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5117-640.webp?v=68a4838f5c 640w, /images/prewedding/bao-5117-1280.webp?v=6597887ba7 1280w, /images/prewedding/bao-5117-1920.webp?v=b415671867 1920w, /images/prewedding/bao-5117.webp?v=01ccbac434 2561w",
+    "sourceId": "BAO_5117",
+    "concept": "concept-1"
+  },
+  "BAO_5191": {
+    "src": "/images/prewedding/bao-5191.webp?v=3d2a2dd8c0",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5191-640.webp?v=1b20638d16 640w, /images/prewedding/bao-5191-1280.webp?v=0e53fd6347 1280w, /images/prewedding/bao-5191-1920.webp?v=e1203807ff 1920w, /images/prewedding/bao-5191.webp?v=3d2a2dd8c0 2561w",
+    "sourceId": "BAO_5191",
+    "concept": "concept-2"
+  },
+  "BAO_5271": {
+    "src": "/images/prewedding/bao-5271.webp?v=c2bed59e29",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5271-640.webp?v=9d89faf14a 640w, /images/prewedding/bao-5271-1280.webp?v=8a431ed9bb 1280w, /images/prewedding/bao-5271-1920.webp?v=75ff5869b0 1920w, /images/prewedding/bao-5271.webp?v=c2bed59e29 2561w",
+    "sourceId": "BAO_5271",
+    "concept": "concept-2"
+  },
+  "BAO_5287": {
+    "src": "/images/prewedding/bao-5287.webp?v=0f6967b9dd",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5287-640.webp?v=08cb771378 640w, /images/prewedding/bao-5287-1280.webp?v=f8b76ca94f 1280w, /images/prewedding/bao-5287-1920.webp?v=3443431a7d 1920w, /images/prewedding/bao-5287.webp?v=0f6967b9dd 2561w",
+    "sourceId": "BAO_5287",
+    "concept": "concept-2"
+  },
+  "BAO_5348": {
+    "src": "/images/prewedding/bao-5348.webp?v=b8a424b029",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5348-640.webp?v=573d8a334a 640w, /images/prewedding/bao-5348-1280.webp?v=9b538215c6 1280w, /images/prewedding/bao-5348-1920.webp?v=28870cafaa 1920w, /images/prewedding/bao-5348.webp?v=b8a424b029 2561w",
+    "sourceId": "BAO_5348",
+    "concept": "concept-2"
+  },
+  "BAO_5529": {
+    "src": "/images/prewedding/bao-5529.webp?v=0e2f0867d1",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5529-640.webp?v=383460bc05 640w, /images/prewedding/bao-5529-1280.webp?v=fc8eebdb10 1280w, /images/prewedding/bao-5529-1920.webp?v=6528d00c33 1920w, /images/prewedding/bao-5529.webp?v=0e2f0867d1 2561w",
+    "sourceId": "BAO_5529",
+    "concept": "concept-2"
+  },
+  "BAO_5550": {
+    "src": "/images/prewedding/bao-5550.webp?v=3a93d06cfd",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5550-640.webp?v=af911d8f60 640w, /images/prewedding/bao-5550-1280.webp?v=e020823ecc 1280w, /images/prewedding/bao-5550-1920.webp?v=63f2354371 1920w, /images/prewedding/bao-5550.webp?v=3a93d06cfd 2561w",
+    "sourceId": "BAO_5550",
+    "concept": "concept-2"
+  },
+  "BAO_5599": {
+    "src": "/images/prewedding/bao-5599.webp?v=ba679b6dea",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-5599-640.webp?v=c9ed76f198 640w, /images/prewedding/bao-5599-1280.webp?v=2893a3d360 1280w, /images/prewedding/bao-5599-1920.webp?v=836873a007 1920w, /images/prewedding/bao-5599.webp?v=ba679b6dea 3840w",
+    "sourceId": "BAO_5599",
+    "concept": "concept-2"
+  },
+  "BAO_5613": {
+    "src": "/images/prewedding/bao-5613.webp?v=4d89e6c9a4",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-5613-640.webp?v=84fd13fbd6 640w, /images/prewedding/bao-5613-1280.webp?v=35c0d2a981 1280w, /images/prewedding/bao-5613-1920.webp?v=12a037cc35 1920w, /images/prewedding/bao-5613.webp?v=4d89e6c9a4 3840w",
+    "sourceId": "BAO_5613",
+    "concept": "concept-2"
+  },
+  "BAO_5735": {
+    "src": "/images/prewedding/bao-5735.webp?v=c67d619c41",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5735-640.webp?v=afbef2a793 640w, /images/prewedding/bao-5735-1280.webp?v=038409be32 1280w, /images/prewedding/bao-5735-1920.webp?v=3f78907036 1920w, /images/prewedding/bao-5735.webp?v=c67d619c41 2561w",
+    "sourceId": "BAO_5735",
+    "concept": "concept-2"
+  },
+  "BAO_5767": {
+    "src": "/images/prewedding/bao-5767.webp?v=d188fc0768",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5767-640.webp?v=b9ab88d0b7 640w, /images/prewedding/bao-5767-1280.webp?v=5d5210e0d0 1280w, /images/prewedding/bao-5767-1920.webp?v=b5b2da0f46 1920w, /images/prewedding/bao-5767.webp?v=d188fc0768 2561w",
+    "sourceId": "BAO_5767",
+    "concept": "concept-2"
+  },
+  "BAO_5801": {
+    "src": "/images/prewedding/bao-5801.webp?v=3d4a9c49da",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5801-640.webp?v=7448a44b4f 640w, /images/prewedding/bao-5801-1280.webp?v=3391d128be 1280w, /images/prewedding/bao-5801-1920.webp?v=bb0779f924 1920w, /images/prewedding/bao-5801.webp?v=3d4a9c49da 2561w",
+    "sourceId": "BAO_5801",
+    "concept": "concept-2"
+  },
+  "BAO_5840": {
+    "src": "/images/prewedding/bao-5840.webp?v=da78fe831c",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5840-640.webp?v=0749d8813d 640w, /images/prewedding/bao-5840-1280.webp?v=1b494bf0c7 1280w, /images/prewedding/bao-5840-1920.webp?v=39efbfc364 1920w, /images/prewedding/bao-5840.webp?v=da78fe831c 2561w",
+    "sourceId": "BAO_5840",
+    "concept": "concept-2"
+  },
+  "BAO_5897": {
+    "src": "/images/prewedding/bao-5897.webp?v=2a43c30d89",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5897-640.webp?v=de71d1825f 640w, /images/prewedding/bao-5897-1280.webp?v=5c5cb31009 1280w, /images/prewedding/bao-5897-1920.webp?v=0b9c0315f2 1920w, /images/prewedding/bao-5897.webp?v=2a43c30d89 2561w",
+    "sourceId": "BAO_5897",
+    "concept": "concept-2"
+  },
+  "BAO_5911": {
+    "src": "/images/prewedding/bao-5911.webp?v=0bd2c3e732",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5911-640.webp?v=8e4089add4 640w, /images/prewedding/bao-5911-1280.webp?v=a9172e7ff1 1280w, /images/prewedding/bao-5911-1920.webp?v=fc90b236c0 1920w, /images/prewedding/bao-5911.webp?v=0bd2c3e732 2561w",
+    "sourceId": "BAO_5911",
+    "concept": "concept-2"
+  },
+  "BAO_5922": {
+    "src": "/images/prewedding/bao-5922.webp?v=b524275b20",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-5922-640.webp?v=5843b3f1ff 640w, /images/prewedding/bao-5922-1280.webp?v=0bfc799350 1280w, /images/prewedding/bao-5922-1920.webp?v=ec7b3aa8fa 1920w, /images/prewedding/bao-5922.webp?v=b524275b20 2561w",
+    "sourceId": "BAO_5922",
+    "concept": "concept-2"
+  },
+  "BAO_6000": {
+    "src": "/images/prewedding/bao-6000.webp?v=e9b6b60eb9",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6000-640.webp?v=c07947ad30 640w, /images/prewedding/bao-6000-1280.webp?v=110e3b09d0 1280w, /images/prewedding/bao-6000-1920.webp?v=01d0207d70 1920w, /images/prewedding/bao-6000.webp?v=e9b6b60eb9 2561w",
+    "sourceId": "BAO_6000",
+    "concept": "concept-3"
+  },
+  "BAO_6038": {
+    "src": "/images/prewedding/bao-6038.webp?v=aaf21b7689",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6038-640.webp?v=9c7ceb3907 640w, /images/prewedding/bao-6038-1280.webp?v=25d6f8e7b9 1280w, /images/prewedding/bao-6038-1920.webp?v=ca8dcd7430 1920w, /images/prewedding/bao-6038.webp?v=aaf21b7689 2561w",
+    "sourceId": "BAO_6038",
+    "concept": "concept-3"
+  },
+  "BAO_6059": {
+    "src": "/images/prewedding/bao-6059.webp?v=0b4eea1231",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6059-640.webp?v=2e1e24fc2e 640w, /images/prewedding/bao-6059-1280.webp?v=7565021210 1280w, /images/prewedding/bao-6059-1920.webp?v=1990b51059 1920w, /images/prewedding/bao-6059.webp?v=0b4eea1231 2561w",
+    "sourceId": "BAO_6059",
+    "concept": "concept-3"
+  },
+  "BAO_6090": {
+    "src": "/images/prewedding/bao-6090.webp?v=470dbe6552",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6090-640.webp?v=fa5d5e62dc 640w, /images/prewedding/bao-6090-1280.webp?v=4d063971b3 1280w, /images/prewedding/bao-6090-1920.webp?v=d1436c8a2e 1920w, /images/prewedding/bao-6090.webp?v=470dbe6552 2561w",
+    "sourceId": "BAO_6090",
+    "concept": "concept-3"
+  },
+  "BAO_6098": {
+    "src": "/images/prewedding/bao-6098.webp?v=3b9b2e2688",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-6098-640.webp?v=adcbe2fc4c 640w, /images/prewedding/bao-6098-1280.webp?v=ec7277987c 1280w, /images/prewedding/bao-6098-1920.webp?v=0220b34c47 1920w, /images/prewedding/bao-6098.webp?v=3b9b2e2688 3840w",
+    "sourceId": "BAO_6098",
+    "concept": "concept-3"
+  },
+  "BAO_6125": {
+    "src": "/images/prewedding/bao-6125.webp?v=dfc276e874",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6125-640.webp?v=221fc5057b 640w, /images/prewedding/bao-6125-1280.webp?v=e13e6c05ee 1280w, /images/prewedding/bao-6125-1920.webp?v=7635e50000 1920w, /images/prewedding/bao-6125.webp?v=dfc276e874 2561w",
+    "sourceId": "BAO_6125",
+    "concept": "concept-3"
+  },
+  "BAO_6189": {
+    "src": "/images/prewedding/bao-6189.webp?v=e05c34d4ea",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6189-640.webp?v=d5cea251d5 640w, /images/prewedding/bao-6189-1280.webp?v=8a261bc570 1280w, /images/prewedding/bao-6189-1920.webp?v=26d4abc075 1920w, /images/prewedding/bao-6189.webp?v=e05c34d4ea 2561w",
+    "sourceId": "BAO_6189",
+    "concept": "concept-3"
+  },
+  "BAO_6205": {
+    "src": "/images/prewedding/bao-6205.webp?v=7d468cf696",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6205-640.webp?v=0461c85ea9 640w, /images/prewedding/bao-6205-1280.webp?v=012f13a83e 1280w, /images/prewedding/bao-6205-1920.webp?v=5c88b344b2 1920w, /images/prewedding/bao-6205.webp?v=7d468cf696 2561w",
+    "sourceId": "BAO_6205",
+    "concept": "concept-3"
+  },
+  "BAO_6241": {
+    "src": "/images/prewedding/bao-6241.webp?v=6576ce9ffa",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6241-640.webp?v=e00151c7cd 640w, /images/prewedding/bao-6241-1280.webp?v=c7dffc12be 1280w, /images/prewedding/bao-6241-1920.webp?v=28ba9747be 1920w, /images/prewedding/bao-6241.webp?v=6576ce9ffa 2561w",
+    "sourceId": "BAO_6241",
+    "concept": "concept-4"
+  },
+  "BAO_6272": {
+    "src": "/images/prewedding/bao-6272.webp?v=d1f1462168",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-6272-640.webp?v=952e07214c 640w, /images/prewedding/bao-6272-1280.webp?v=ab20fee5bf 1280w, /images/prewedding/bao-6272-1920.webp?v=105606ef8d 1920w, /images/prewedding/bao-6272.webp?v=d1f1462168 3840w",
+    "sourceId": "BAO_6272",
+    "concept": "concept-4"
+  },
+  "BAO_6309": {
+    "src": "/images/prewedding/bao-6309.webp?v=b6a17d85ee",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6309-640.webp?v=7ba2f0c67f 640w, /images/prewedding/bao-6309-1280.webp?v=6911af9cea 1280w, /images/prewedding/bao-6309-1920.webp?v=620f644f51 1920w, /images/prewedding/bao-6309.webp?v=b6a17d85ee 2561w",
+    "sourceId": "BAO_6309",
+    "concept": "concept-4"
+  },
+  "BAO_6400": {
+    "src": "/images/prewedding/bao-6400.webp?v=a239112abc",
+    "width": 3840,
+    "height": 2561,
+    "srcSet": "/images/prewedding/bao-6400-640.webp?v=83f7bb0ae6 640w, /images/prewedding/bao-6400-1280.webp?v=245032af09 1280w, /images/prewedding/bao-6400-1920.webp?v=b5fc836855 1920w, /images/prewedding/bao-6400.webp?v=a239112abc 3840w",
+    "sourceId": "BAO_6400",
+    "concept": "concept-4"
+  },
+  "BAO_6431": {
+    "src": "/images/prewedding/bao-6431.webp?v=54fa71cb68",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6431-640.webp?v=0047e9d7ce 640w, /images/prewedding/bao-6431-1280.webp?v=dfb55594ba 1280w, /images/prewedding/bao-6431-1920.webp?v=981d7b714d 1920w, /images/prewedding/bao-6431.webp?v=54fa71cb68 2561w",
+    "sourceId": "BAO_6431",
+    "concept": "concept-4"
+  },
+  "BAO_6475": {
+    "src": "/images/prewedding/bao-6475.webp?v=770c9a0755",
+    "width": 2561,
+    "height": 3840,
+    "srcSet": "/images/prewedding/bao-6475-640.webp?v=d0a2165a3d 640w, /images/prewedding/bao-6475-1280.webp?v=e0785cbc2c 1280w, /images/prewedding/bao-6475-1920.webp?v=897ec8d810 1920w, /images/prewedding/bao-6475.webp?v=770c9a0755 2561w",
+    "sourceId": "BAO_6475",
+    "concept": "concept-4"
+  }
+}

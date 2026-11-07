@@ -1,0 +1,11 @@
+{
+  "tool": "image_gen",
+  "bride": {
+    "sourceId": "BAO_4610",
+    "prompt": "Use case: background-extraction. Edit target: BAO_4610 bride photograph. Remove ONLY the background garden. Output a real transparent RGBA cutout of exactly this bride, including her veil, bouquet, raised hand and complete visible white dress and train. Preserve her exact original face, expression, body, pose, hairstyle, photographic detail and clothing; retain the original pixels as closely as possible. No beautification, retouching, new face, redrawing or pose changes. Do not remove her hand by her cheek or her flowers. Fine natural alpha edges for lace, hair and translucent veil. Portrait composition, entire visible subject fits, minimal transparent padding, no text, no shadows, no new objects, true transparency."
+  },
+  "groom": {
+    "sourceId": "BAO_6309",
+    "prompt": "Use case: background-extraction. Edit target: supplied BAO_6309 wedding photograph. Extract ONLY the groom, the man on the left in the black double-breasted suit. Remove the entire garden, flowers, champagne glasses, table and other person. Create a natural waist-up transparent RGBA cutout cropped just below his jacket buttons; do not invent hidden legs, hands or new body. Preserve his exact original face, expression, hair, suit, proportions, pose and photographic detail; retain original pixels as closely as possible. No beautification, retouching, new face, redrawing, altered pose or clothing. Clean fine hair edges, modest transparent margins, no text, no shadow or backdrop, true transparency."
+  }
+}
