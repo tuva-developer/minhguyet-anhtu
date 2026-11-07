@@ -59,8 +59,8 @@ function ContactSheet({ photos, onPhoto }) {
   return <div className="reel-contact-sheet"><div className="contact-sheet-heading"><span>TOÀN BỘ NHỮNG KHOẢNH KHẮC</span><span>{photos.length} ẢNH / CHẠM ĐỂ XEM</span></div><div className={`album-grid ${photos.length === 1 ? 'single-photo' : ''}`}>{photos.slice(0, limit).map((photo, index) => <Reveal key={photo.id} className={`album-card ${index % 3 === 1 ? 'offset-card' : ''}`}><button className="album-photo-button" onClick={() => onPhoto(photo.id, 'gallery')} aria-label={`Xem ảnh: ${photo.caption || photo.alt}`}><motion.div className="photo-surface" layoutId={`gallery-${photo.id}`}><Photo photo={photo} /><span className="photo-open"><ArrowUpRight size={20} /></span></motion.div><span className="album-caption"><small>{String(index + 1).padStart(2, '0')}</small><span>{photo.caption || photo.alt}</span><ArrowUpRight size={13} /></span></button></Reveal>)}</div>{limit < photos.length && <div className="load-more"><button className="button button-outline" onClick={() => setLimit(value => value + 12)}>Xem thêm những trang ảnh <Plus size={16} /></button></div>}</div>;
 }
 
-function MobileTile({ photo, index, count, entrance, onPhoto, reduced }) {
-  const arrive = useTransform(entrance, p => ease((p - index * .06) / .82));
+function MobileTile({ photo, index, count, progress, onPhoto, reduced }) {
+  const arrive = useTransform(progress, p => ease((p - index * .06) / .82));
   const x = useTransform(arrive, [0, 1], [`${count === 1 ? 0 : index % 2 ? -45 : 45}%`, '0%']);
   const y = useTransform(arrive, [0, 1], [`${count <= 2 ? 0 : index < 2 ? 30 : -30}%`, '0%']);
   const rotate = useTransform(arrive, [0, 1], [-8 + index * 5, 0]);
@@ -76,7 +76,7 @@ function MobileTile({ photo, index, count, entrance, onPhoto, reduced }) {
 
 function Montage({ photos, onPhoto }) {
   const { site, albumLead } = useMedia();
-  const { ref, progress: sceneProgress, entranceProgress, compact, reduced } = useScene({ duration: 1.2 });
+  const { ref, progress: sceneProgress, compact, reduced } = useScene();
   const flow = useStoryFlow();
   const standaloneOwnership = useMotionValue(1);
   // Use the camera's clock so both sides of the handoff update in one frame.
@@ -115,7 +115,7 @@ function Montage({ photos, onPhoto }) {
     <div className="film-stage reel-stage montage-stage" data-phase={compact ? 'grid' : phase} data-primary-photo={preview[activeIndex].id}>
       <motion.div className="reel-heading" style={{ opacity: reduced || compact ? 1 : titleOpacity }}><span className="cinema-kicker">GOM TỪNG KHOẢNH KHẮC, THÀNH MỘT ĐỜI.</span><p>Những ngày <em>có nhau.</em></p><span className="reel-counter">{String(photos.length).padStart(2, '0')}<small>KHOẢNH KHẮC</small></span></motion.div>
       <div className={`reel-space montage-space ${compact ? 'mobile-album-grid' : ''} ${preview.length === 1 ? 'single-photo' : ''}`} style={compact ? { gridTemplateRows: `repeat(${Math.ceil(preview.length / 2)}, minmax(0, 1fr))` } : undefined}>{preview.map((photo, index) => compact
-        ? <MobileTile key={photo.id} photo={photo} index={index} count={preview.length} entrance={entranceProgress} onPhoto={onPhoto} reduced={reduced} />
+        ? <MobileTile key={photo.id} photo={photo} index={index} count={preview.length} progress={progress} onPhoto={onPhoto} reduced={reduced} />
         : <Tile key={photo.id} photo={photo} index={index} count={preview.length} progress={progress} compact={compact} reduced={reduced} phase={phase} viewport={dimensions} onPhoto={onPhoto} photoOwnership={flow?.albumPhotoOpacity || standaloneOwnership} leadSrc={flow?.leadSrc} exitIndex={exitIndex} activeIndex={activeIndex} />)}</div>
       {!reduced && !compact && <motion.p className="montage-ending" style={{ opacity: endingOpacity }}>Một đời,<br /><em>có nhau.</em></motion.p>}
       <div className="reel-controls"><button className="reel-contact-toggle" aria-expanded={expanded} onClick={toggle}><Grid2X2 size={14} />{expanded ? 'Đóng toàn bộ album' : 'Xem toàn bộ album'}<ArrowDown size={14} /></button>{!reduced && !compact && <button className="montage-view-grid" onClick={() => seekScene(ref, .53)}>DỪNG LẠI MỘT CHÚT <span>↗</span></button>}</div>

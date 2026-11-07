@@ -8,7 +8,7 @@ import CoverCamera from './CoverCamera';
 
 export function Cover({ openingProgress }) {
   const { site, cover } = useMedia();
-  const { ref, progress, reduced, compact } = useScene();
+  const { ref, progress, reduced, compact } = useScene({ mobileOffset: ['start start', 'end start'] });
   const upperX = useTransform(progress, [0, .12, .55], ['0%', '-2%', '-110%']);
   const lowerX = useTransform(progress, [0, .12, .55], ['0%', '2%', '110%']);
   const namesOpacity = useTransform(progress, [.18, .5], [1, 0]);
@@ -22,11 +22,11 @@ export function Cover({ openingProgress }) {
     <div className="film-stage hero-stage">
       <div className="hero-aura" /><span className="hero-year" aria-hidden="true">20<br />27</span>
       <div className="hero-window">{cover ? compact ? <CoverCamera photo={cover} progress={openingProgress} scroll={progress} stationary /> : <CinemaPhoto photo={cover} priority /> : <PaperMonogram />}<div className="hero-window-shade" /></div>
-      <motion.div className="cinema-names" style={{ opacity: reduced || compact ? 1 : namesOpacity }}>
+      <motion.div className="cinema-names" style={{ opacity: reduced ? 1 : namesOpacity }}>
         <span className="hero-prelude">CÓ MỘT SỢI DUYÊN, NỐI HAI CUỘC ĐỜI.</span>
         <h1 aria-label={`${site.groomFull} và ${site.brideFull}`}>
-          <motion.span className="name-upper" style={{ x: reduced || compact ? 0 : upperX }}><motion.span className="name-enter" style={reduced ? { x: 0, opacity: 1 } : { x: entryUpperX, opacity: entryOpacity }}>{site.groom}</motion.span></motion.span>
-          <motion.span className="name-lower" style={{ x: reduced || compact ? 0 : lowerX }}><motion.span className="name-enter" style={reduced ? { x: 0, opacity: 1 } : { x: entryLowerX, opacity: entryOpacity }}>{site.bride}</motion.span></motion.span>
+          <motion.span className="name-upper" style={{ x: reduced ? 0 : upperX }}><motion.span className="name-enter" style={reduced ? { x: 0, opacity: 1 } : { x: entryUpperX, opacity: entryOpacity }}>{site.groom}</motion.span></motion.span>
+          <motion.span className="name-lower" style={{ x: reduced ? 0 : lowerX }}><motion.span className="name-enter" style={reduced ? { x: 0, opacity: 1 } : { x: entryLowerX, opacity: entryOpacity }}>{site.bride}</motion.span></motion.span>
         </h1>
       </motion.div>
       {!reduced && !compact && <motion.div className="hero-revelation" style={{ opacity: quoteOpacity, y: quoteY }}><span className="cinema-kicker">CHUYỆN BẮT ĐẦU TỪ</span><p>Hai người.<br /><em>Một sợi duyên.</em></p><span className="hero-promise">Cuộn tiếp, cùng chúng mình viết nên một đời.</span></motion.div>}
@@ -46,16 +46,16 @@ function LitWord({ children, index, count, progress, reduced, compact }) {
 
 export function Letter() {
   const { site, couple } = useMedia();
-  const { ref, progress, entranceProgress, reduced, compact } = useScene({ duration: .9 });
+  const { ref, progress, reduced, compact } = useScene();
   const words = 'Có những cuộc gặp, trở thành cả một cuộc đời.'.split(' ');
   const opacity = useTransform(progress, [.56, .88], [1, 0]);
   const y = useTransform(progress, [.56, .9], [0, -60]);
-  const imageX = useTransform(entranceProgress, [0, 1], [24, 0]);
-  const imageY = useTransform(entranceProgress, [0, 1], [14, 0]);
-  const imageRotate = useTransform(entranceProgress, [0, 1], [-5, 0]);
+  const imageX = useTransform(progress, [0, 1], [24, 0]);
+  const imageY = useTransform(progress, [0, 1], [14, 0]);
+  const imageRotate = useTransform(progress, [0, 1], [-5, 0]);
   return <section id="opening" className="film-scene reading-film" ref={ref}><div className="film-stage reading-stage">
     <span className="reading-backword" aria-hidden="true">thương.</span>
-    <motion.div className="reading-content" style={reduced || compact ? undefined : { opacity, y }}><span className="cinema-kicker">GỬI NGƯỜI THƯƠNG MẾN</span><h2>{words.map((word, index) => <LitWord key={index} index={index} count={words.length} progress={compact ? entranceProgress : progress} reduced={reduced} compact={compact}>{word}</LitWord>)}</h2><motion.div className="reading-rule" style={compact && !reduced ? { scaleX: entranceProgress, transformOrigin: 'left' } : undefined} /><p>{site.groomFull} và {site.brideFull}<br />trân trọng mời bạn đến chung vui, và cùng giữ lại một ngày thật đẹp.</p></motion.div>
+    <motion.div className="reading-content" style={reduced || compact ? undefined : { opacity, y }}><span className="cinema-kicker">GỬI NGƯỜI THƯƠNG MẾN</span><h2>{words.map((word, index) => <LitWord key={index} index={index} count={words.length} progress={progress} reduced={reduced} compact={compact}>{word}</LitWord>)}</h2><motion.div className="reading-rule" style={compact && !reduced ? { scaleX: progress, transformOrigin: 'left' } : undefined} /><p>{site.groomFull} và {site.brideFull}<br />trân trọng mời bạn đến chung vui, và cùng giữ lại một ngày thật đẹp.</p></motion.div>
     {couple && <motion.figure className="reading-image" style={compact && !reduced ? { x: imageX, y: imageY, rotate: imageRotate } : undefined}><Photo photo={couple} /><figcaption>một người, để gọi là nhà.</figcaption></motion.figure>}
     <SceneHUD number="02" label="MỘT CUỘC GẶP, MỘT ĐỜI" progress={progress} />
   </div></section>;
@@ -68,8 +68,8 @@ function WaveLetter({ char, index, count, progress, direction, reduced }) {
 }
 
 export function Aperture() {
-  const { ref, progress, entranceProgress, reduced, compact } = useScene({ duration: 1.2 });
-  const animationProgress = compact ? entranceProgress : progress;
+  const { ref, progress, reduced } = useScene();
+  const animationProgress = progress;
   const x1 = useTransform(animationProgress, [0, .8], ['-25%', '0%']);
   const x2 = useTransform(animationProgress, [0, .8], ['25%', '0%']);
   const line = useTransform(animationProgress, [.55, .9], [0, 1]);

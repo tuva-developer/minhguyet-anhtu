@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { animate, motion, useMotionValue, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from 'framer-motion';
+import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
-import { ease, prefersReduced } from '../lib/motion';
+import { prefersReduced } from '../lib/motion';
 
 const PresentationContext = createContext({ compact: false, reduced: false, mode: 'scroll', ready: true });
 export const usePresentation = () => useContext(PresentationContext);
@@ -43,76 +43,32 @@ export function PresentationProvider({ ready, children }) {
     document.fonts.ready.then(() => { if (!cancelled) frame = requestAnimationFrame(align); });
     return () => { stop(); gestures.forEach(type => window.removeEventListener(type, stop)); };
   }, []);
-  const mode = reduced ? 'static' : compact ? 'enter' : 'scroll';
+  const mode = reduced ? 'static' : 'scroll';
   return <PresentationContext.Provider value={{ compact, reduced, mode, ready }}>{children}</PresentationContext.Provider>;
 }
 
-// A scene owns one short entrance, independently of how far the guest scrolls.
-// Leaving/skipping a scene settles it; reversing never hides readable content.
-export function useEntrance(ref, { duration = .9, enabled = true } = {}) {
-  const { compact, mode, ready } = usePresentation();
-  const entranceProgress = useMotionValue(mode === 'static' ? 1 : 0);
-  const played = useRef(false);
+// Both touch and wheel use document scroll. Compact scenes scrub while entering
+// the viewport, preserving their short layouts instead of adding pinned space.
+export function useSceneProgress(ref, { offset, mobileOffset = ['start 0.9', 'start 0.15'] } = {}) {
+  const { compact, reduced, mode, ready } = usePresentation();
+  const { scrollYProgress: rawProgress } = useScroll({
+    target: ref,
+    offset: offset || (compact ? mobileOffset : ['start start', 'end end']),
+  });
+  const soft = useSoftScroll(rawProgress);
+  const progress = useTransform(soft, value => reduced ? 1 : ready ? value : 0);
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    element.dataset.sceneMode = mode;
-    let animation, observer, frame;
-    const stopWatching = () => {
-      observer?.disconnect();
-      window.removeEventListener('scroll', onScroll);
-      cancelAnimationFrame(frame);
-    };
-    const finish = () => {
-      animation?.stop();
-      played.current = true;
-      entranceProgress.set(1);
-      element.dataset.enterState = 'done';
-      stopWatching();
-    };
-    function onScroll() {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const rect = element.getBoundingClientRect();
-        // IntersectionObserver alone misses a jump from entirely below to
-        // entirely above the viewport (both intersections are zero).
-        if (rect.bottom <= 66 || (played.current && rect.top >= innerHeight)) finish();
-      });
-    }
-    if (mode === 'static' || !enabled) { finish(); return; }
-    if (!compact) { entranceProgress.set(1); return; }
-    if (played.current) { finish(); return; }
-    entranceProgress.set(0);
-    element.dataset.enterState = 'waiting';
-    if (!ready) return;
-    if (element.getBoundingClientRect().bottom <= 66) { finish(); return; }
-    const threshold = Math.min(.35, Math.max(.05, (innerHeight - 66) / element.offsetHeight * .8));
-    observer = new IntersectionObserver(entries => {
-      for (const entry of entries) {
-        if (entry.boundingClientRect.bottom <= 66 || (played.current && !entry.isIntersecting)) {
-          finish();
-        } else if (!played.current && entry.intersectionRatio >= threshold) {
-          played.current = true;
-          element.dataset.enterState = 'running';
-          animation = animate(entranceProgress, 1, {
-            duration: Math.min(1.2, duration), ease,
-            onComplete: () => { element.dataset.enterState = 'done'; stopWatching(); },
-          });
-        }
-      }
-    }, { threshold: [0, threshold], rootMargin: '-66px 0px 0px 0px' });
-    observer.observe(element);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => { stopWatching(); animation?.stop(); };
-  }, [compact, mode, ready, enabled, duration, entranceProgress, ref]);
-  return entranceProgress;
+    if (!ref.current) return;
+    ref.current.dataset.sceneMode = mode;
+    delete ref.current.dataset.enterState;
+  }, [mode, ref]);
+  return { progress, rawProgress };
 }
 
 // A short, overdamped follow-through smooths wheel/touch steps without bounce.
 // Large jumps (anchors, PageDown, restoration) land immediately at the right scene.
 export function useSoftScroll(source, jumpDistance = .35, restDelta = .0001) {
-  const reduced = useReducedMotion();
-  const { compact } = usePresentation();
+  const { compact, reduced } = usePresentation();
   const previous = useRef(source.get());
   const soft = useSpring(source, { stiffness: compact ? 240 : 300, damping: 32, mass: .6, restDelta, restSpeed: restDelta * 10 });
   useMotionValueEvent(source, 'change', value => {
@@ -124,11 +80,8 @@ export function useSoftScroll(source, jumpDistance = .35, restDelta = .0001) {
 
 export function useScene(options) {
   const ref = useRef(null);
-  const { compact, reduced, mode } = usePresentation();
-  const entranceProgress = useEntrance(ref, options);
-  const { scrollYProgress: rawProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
-  const progress = useSoftScroll(rawProgress);
-  return { ref, progress, rawProgress, entranceProgress, reduced, compact, mode };
+  const presentation = usePresentation();
+  return { ref, ...useSceneProgress(ref, options), ...presentation };
 }
 
 export function seekScene(ref, fraction) {

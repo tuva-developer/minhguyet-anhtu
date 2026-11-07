@@ -2,14 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValueEvent, useTransform } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { Photo, useMedia } from './Media';
-import { useEntrance, usePresentation, useScene, SceneHUD, seekScene } from './Scene';
+import { useSceneProgress, usePresentation, useScene, SceneHUD, seekScene } from './Scene';
 import { goTo } from '../lib/motion';
 
 function DatePanel({ event, index, count, progress, reduced, active, onRSVP }) {
   const { eventPhotos, site } = useMedia();
   const { compact } = usePresentation();
   const ref = useRef(null);
-  const entrance = useEntrance(ref, { duration: .8 });
+  const { progress: paperProgress } = useSceneProgress(ref);
   const photo = eventPhotos[event.id];
   const start = index / count;
   const fold = useTransform(progress, value => {
@@ -24,8 +24,8 @@ function DatePanel({ event, index, count, progress, reduced, active, onRSVP }) {
   const shade = useTransform(fold, value => value.shade);
   const numberY = useTransform(progress, [start, Math.min(1, start + 1 / count)], [40, -55]);
   const imageScale = useTransform(progress, [start, Math.min(1, start + 1 / count)], [1.06, 1]);
-  const paperScale = useTransform(entrance, [0, 1], [1.07, 1]);
-  const paperRotate = useTransform(entrance, [0, 1], [-8, 0]);
+  const paperScale = useTransform(paperProgress, [0, 1], [1.07, 1]);
+  const paperRotate = useTransform(paperProgress, [0, 1], [-8, 0]);
   const [day, month, year] = event.date.split('.');
   return <motion.article ref={ref} id={`event-${event.id}`} data-event-id={event.id} data-photo-id={photo?.id} className={`date-panel date-theme-${index % 3} ${active || compact ? 'is-active' : ''}`} style={reduced || compact ? undefined : { rotateY, opacity, scale, zIndex: count - index }} aria-hidden={!compact && !reduced && !active} inert={!compact && !reduced && !active ? '' : undefined}>
     {photo && <motion.div className="date-backdrop" style={reduced ? undefined : compact ? { scale: paperScale, rotateY: paperRotate } : { scale: imageScale }} aria-hidden="true"><Photo photo={photo} sizes="100vmax" alt="" /></motion.div>}<div className="date-backdrop-shade" />
@@ -34,13 +34,13 @@ function DatePanel({ event, index, count, progress, reduced, active, onRSVP }) {
     <motion.div className="date-giant" style={{ y: reduced || compact ? 0 : numberY }}><time dateTime={event.dateTime}><span>{day}<i>/</i></span><span>{month}<small>{year}</small></span></time><p>{event.weekday.toUpperCase()}</p></motion.div>
     <p className="date-bottom-line">MỘT CUỘC HẸN, ĐỂ GIỮ NHAU CẢ ĐỜI.</p>
     {!reduced && !compact && <motion.div className="paper-fold-shade" style={{ opacity: shade }} aria-hidden="true" />}<span className="paper-fold-spine" aria-hidden="true" />
-    {compact && <SceneHUD number={String(index + 1).padStart(2, '0')} label={event.name.toUpperCase()} progress={entrance}><button className="hud-scroll" onClick={() => goTo(index < count - 1 ? `event-${site.events[index + 1].id}` : 'wishes')}>{index < count - 1 ? 'LỄ TIẾP THEO' : 'GỬI LỜI THƯƠNG'} <ArrowUpRight size={14} /></button></SceneHUD>}
+    {compact && <SceneHUD number={String(index + 1).padStart(2, '0')} label={event.name.toUpperCase()} progress={paperProgress}><button className="hud-scroll" onClick={() => goTo(index < count - 1 ? `event-${site.events[index + 1].id}` : 'wishes')}>{index < count - 1 ? 'LỄ TIẾP THEO' : 'GỬI LỜI THƯƠNG'} <ArrowUpRight size={14} /></button></SceneHUD>}
   </motion.article>;
 }
 
 export default function Schedule({ onRSVP }) {
   const { site } = useMedia();
-  const { ref, progress, reduced, compact } = useScene({ enabled: false });
+  const { ref, progress, reduced, compact } = useScene();
   const [active, setActive] = useState(0);
   const count = site.events.length;
   useMotionValueEvent(progress, 'change', value => { if (!compact) setActive(Math.min(count - 1, Math.floor(value * count))); });

@@ -13,7 +13,7 @@ export default function CoverCamera({ photo, progress, scroll, geometry, station
   // Ease back to the original crop before the scroll choreography takes over.
   const gate = useTransform(scroll, value => {
     if (reduced) return 0;
-    if (stationary) return 1;
+    if (stationary) return 1 - smooth(value);
     if (!geometry?.hero) return 0;
     return 1 - smooth((value - geometry.hero.top) / (geometry.hero.travel * .28));
   });

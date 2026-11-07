@@ -1,4 +1,4 @@
-"""Mobile entrances, natural scrolling, interactions and breakpoint regressions.
+"""Mobile scroll scrubbing, natural flow, interactions and breakpoint regressions.
 
 Run against Vite: python scripts/check-mobile-flow.py --url http://127.0.0.1:5173
 Screenshots are written to ignored artifacts/mobile-flow/.
@@ -13,6 +13,7 @@ from playwright.sync_api import sync_playwright, expect
 parser = argparse.ArgumentParser()
 parser.add_argument('--url', default='http://127.0.0.1:5173')
 parser.add_argument('--extra-only', action='store_true', help='Run fast-skip, resize, fixture and reduced-motion checks only.')
+parser.add_argument('--width', type=int, choices=[320, 390, 430], help='Run the main responsive flow at one width.')
 args = parser.parse_args()
 out = Path('artifacts/mobile-flow')
 out.mkdir(parents=True, exist_ok=True)
@@ -21,6 +22,15 @@ out.mkdir(parents=True, exist_ok=True)
 def jump(page, selector, wait=1300):
     page.locator(selector).evaluate('(el)=>el.scrollIntoView({behavior:"instant",block:"start"})')
     page.wait_for_timeout(wait)
+
+
+def scrub(page, selector, fraction):
+    page.locator(selector).evaluate('(el,p)=>scrollTo({top:el.getBoundingClientRect().top+scrollY-innerHeight*.9+innerHeight*.75*p,behavior:"instant"})', fraction)
+    page.wait_for_timeout(700)
+
+
+def motion_state(page, selector):
+    return page.locator(selector).first.evaluate('el=>{const m=new DOMMatrix(getComputedStyle(el).transform);return [m.a,m.b,m.c,m.d,m.m41,m.m42]}')
 
 
 def healthy(page):
@@ -43,11 +53,14 @@ with sync_playwright() as p:
         return page
 
     for width, height in ([] if args.extra_only else [(320, 740), (390, 844), (430, 932)]):
+        if args.width and width != args.width:
+            continue
         page = mobile(width, height)
         page.goto(args.url, wait_until='domcontentloaded')
         page.locator('.opening-intro').wait_for(state='visible')
         if page.locator('.opening-intro').count():
-            expect(page.locator('#opening')).to_have_attribute('data-enter-state', 'waiting')
+            expect(page.locator('#opening')).to_have_attribute('data-scene-mode', 'scroll')
+            assert page.locator('.reading-content h2 > span').first.evaluate('el=>+getComputedStyle(el).opacity') <= .18
             page.get_by_role('button', name='Bỏ qua').click()
         page.locator('.opening-intro').wait_for(state='detached')
         page.wait_for_timeout(500)
@@ -59,13 +72,24 @@ with sync_playwright() as p:
         healthy(page)
         page.screenshot(path=str(out / f'{width}-home.png'))
 
-        # The scene finishes while scrollY stays unchanged; scroll is not its clock.
+        # Scroll is the clock: reverse restores the pose; pausing does not autoplay.
         for selector, name in [('#opening', 'letter'), ('.reel-film', 'album'), ('#couple', 'profiles'), ('.wave-film', 'wave')]:
-            jump(page, selector, 80)
+            child = {'letter': '.reading-rule', 'album': '.mobile-album-tile', 'profiles': '.family-subject-frame', 'wave': '.wave-row'}[name]
+            scrub(page, selector, .2)
+            early = motion_state(page, selector + ' ' + child)
+            scrub(page, selector, .8)
+            later = motion_state(page, selector + ' ' + child)
+            assert max(abs(a-b) for a,b in zip(early,later)) > .05, (width,name,early,later)
             scroll = page.evaluate('scrollY')
-            page.wait_for_timeout(1200)
-            expect(page.locator(selector)).to_have_attribute('data-enter-state', 'done')
+            page.wait_for_timeout(400)
+            paused = motion_state(page, selector + ' ' + child)
             assert abs(page.evaluate('scrollY') - scroll) < 1
+            assert max(abs(a-b) for a,b in zip(paused,later)) < .5, (width,name,'autoplay while paused')
+            scrub(page, selector, .2)
+            reverse = motion_state(page, selector + ' ' + child)
+            assert max(abs(a-b) for a,b in zip(early,reverse)) < 1.5, (width,name,early,reverse)
+            jump(page, selector, 700)
+            expect(page.locator(selector)).to_have_attribute('data-scene-mode', 'scroll')
             stage = page.locator(selector + ' > .film-stage')
             assert stage.evaluate('(el)=>getComputedStyle(el).position') == 'relative'
             scene_height = page.locator(selector).bounding_box()['height']
@@ -85,8 +109,8 @@ with sync_playwright() as p:
         assert page.locator('.family-bride svg.family-subject').get_attribute('data-original-src') == site['bridePortrait']['src']
         assert page.locator('.family-stage .scene-hud > div:first-child > span:last-child').is_visible()
 
-        jump(page, '.reel-film')  # Reverse scroll must keep the final grid.
-        expect(page.locator('.reel-film')).to_have_attribute('data-enter-state', 'done')
+        jump(page, '.reel-film')  # Fully in view, the scrubbed fan reaches its grid.
+        expect(page.locator('.reel-film')).to_have_attribute('data-scene-mode', 'scroll')
         tiles = page.locator('.mobile-album-tile')
         ids = tiles.evaluate_all('(els)=>els.map(el=>el.dataset.photoId)')
         assert len(ids) == len(set(ids)) == 4
@@ -128,9 +152,10 @@ with sync_playwright() as p:
             nav = page.locator('.mobile-date-nav')
             assert nav.evaluate('el=>getComputedStyle(el).position') == 'sticky'
             assert 44 <= nav.bounding_box()['height'] <= 56
-            assert abs(nav.bounding_box()['y'] - 66) < 1
+            # Native scrollIntoView can round fractional document positions.
+            assert abs(nav.bounding_box()['y'] - 66) < 2, (width,event['id'],nav.bounding_box(),panel.bounding_box(),page.evaluate('scrollY'))
             expect(nav.locator('button[aria-current]')).to_have_attribute('aria-controls', f'event-{event["id"]}')
-            expect(panel).to_have_attribute('data-enter-state', 'done')
+            expect(panel).to_have_attribute('data-scene-mode', 'scroll')
             assert panel.evaluate('(el)=>getComputedStyle(el).position') == 'relative'
             assert panel.get_attribute('aria-hidden') == 'false'
             assert panel.get_attribute('inert') is None
@@ -158,7 +183,7 @@ with sync_playwright() as p:
         page.get_by_role('button', name='Mở mục lục').tap()
         page.get_by_role('dialog', name='Mục lục').get_by_role('button', name='Lời ngỏ', exact=False).tap()
         page.wait_for_function('Math.abs(document.getElementById("opening").getBoundingClientRect().top)<2')
-        expect(page.locator('#opening')).to_have_attribute('data-enter-state', 'done')
+        expect(page.locator('#opening')).to_have_attribute('data-scene-mode', 'scroll')
         if width == 390:
             jump(page, '#wishes')
             page.locator('#wish-name').fill('Mobile guest')
@@ -172,11 +197,13 @@ with sync_playwright() as p:
             assert page.evaluate('JSON.parse(localStorage.getItem("wedding-messages"))[0].name') == 'Mobile guest'
             assert page.evaluate('JSON.parse(localStorage.getItem("wedding-rsvp")).at(-1).name') == 'Mobile guest'
         jump(page, '#closing')
-        expect(page.locator('#closing')).to_have_attribute('data-enter-state', 'done')
+        page.evaluate('scrollTo({top:document.documentElement.scrollHeight,behavior:"instant"})')
+        page.wait_for_timeout(700)
+        expect(page.locator('#closing')).to_have_attribute('data-scene-mode', 'scroll')
         assert page.locator('.closing-rings path').evaluate_all('(els)=>els.every(el=>parseFloat(el.getAttribute("stroke-dasharray"))>.99)')
         page.screenshot(path=str(out / f'{width}-closing.png'))
         healthy(page)
-        print(f'PASS {width}px: natural fullscreen flow, completed entrances, grid, keyboard/lightbox, 3 RSVP, menu, rings, no overflow.', flush=True)
+        print(f'PASS {width}px: reversible scroll scrubbing, no autoplay, compact flow, grid, keyboard/lightbox, 3 RSVP, menu, rings, no overflow.', flush=True)
         if width == 390:
             page.reload(wait_until='domcontentloaded')
             page.locator('.opening-intro').wait_for(state='visible')
@@ -186,25 +213,25 @@ with sync_playwright() as p:
             assert page.evaluate('JSON.parse(localStorage.getItem("wedding-messages"))[0].name') == 'Mobile guest'
         page.close()
 
-    # Fast jumps must settle even a scene skipped between two non-intersections.
+    # Direct jumps and native touch input stay on the actual scroll clock.
     page = mobile()
     open_site(page, args.url + '/#home', wait_until='networkidle')
     site = page.evaluate('async()=>JSON.parse(JSON.stringify((await import("/src/data/site.js")).wedding))')
-    # It waits below the visibility threshold, then animates without more scroll.
-    page.locator('#opening').evaluate('el=>scrollTo({top:el.getBoundingClientRect().top+scrollY-innerHeight+el.offsetHeight*.3,behavior:"instant"})')
-    page.wait_for_timeout(150)
-    expect(page.locator('#opening')).to_have_attribute('data-enter-state', 'waiting')
-    page.evaluate('scrollBy({top:innerHeight*.08,behavior:"instant"})')
-    expect(page.locator('#opening')).to_have_attribute('data-enter-state', 'running')
-    first_opacity = page.locator('.reading-content h2 > span').last.evaluate('el=>+getComputedStyle(el).opacity')
-    page.wait_for_timeout(1100)
-    expect(page.locator('#opening')).to_have_attribute('data-enter-state', 'done')
-    assert first_opacity < page.locator('.reading-content h2 > span').last.evaluate('el=>+getComputedStyle(el).opacity')
+    client = page.context.new_cdp_session(page)
+    client.send('Input.dispatchTouchEvent', {'type': 'touchStart', 'touchPoints': [{'x': 340, 'y': 650}]})
+    for y in [610, 570, 530, 490, 450]:
+        client.send('Input.dispatchTouchEvent', {'type': 'touchMove', 'touchPoints': [{'x': 340, 'y': y}]})
+    client.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []})
+    page.wait_for_timeout(700)
+    assert page.evaluate('scrollY') > 100
+    assert page.locator('.cinema-names').evaluate('el=>+getComputedStyle(el).opacity') < 1
+    jump(page, '#home', 700)
+    assert page.locator('.cinema-names').evaluate('el=>+getComputedStyle(el).opacity') == 1
     jump(page, '#closing', 120)
     for selector in ['#opening', '.reel-film', '#couple', '.wave-film', '.date-panel']:
-        assert page.locator(selector).evaluate_all('(els)=>els.every(el=>el.dataset.enterState==="done")'), selector
+        assert page.locator(selector).evaluate_all('(els)=>els.every(el=>el.dataset.sceneMode==="scroll")'), selector
     jump(page, '#couple', 50)
-    expect(page.locator('#couple')).to_have_attribute('data-enter-state', 'done')
+    expect(page.locator('#couple')).to_have_attribute('data-scene-mode', 'scroll')
     for width in [701, 768, 1024, 1440, 700, 390]:
         page.set_viewport_size({'width': width, 'height': 900 if width > 700 else 844})
         jump(page, '#home', 700)
@@ -291,7 +318,7 @@ with sync_playwright() as p:
     open_site(page, args.url, wait_until='networkidle')
     assert page.locator('.opening-intro').count() == 0
     for selector in ['#home', '#opening', '.reel-film', '#couple', '.wave-film', '.date-panel', '#closing']:
-        assert page.locator(selector).evaluate_all('(els)=>els.every(el=>el.dataset.sceneMode==="static"&&el.dataset.enterState==="done")'), selector
+        assert page.locator(selector).evaluate_all('(els)=>els.every(el=>el.dataset.sceneMode==="static")'), selector
     assert page.locator('.family-subject-frame').evaluate_all('(els)=>els.every(el=>getComputedStyle(el).transform==="none")')
     jump(page, '#event')
     assert page.locator('.date-panel[inert]').count() == 0

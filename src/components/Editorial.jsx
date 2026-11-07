@@ -1,5 +1,5 @@
 import LoveMark from './LoveMark';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useTransform } from 'framer-motion';
 import { ArrowUp, ArrowUpRight } from 'lucide-react';
 import Reveal from './Reveal';
 import { goTo } from '../lib/motion';
@@ -10,10 +10,9 @@ export function PageLabel({ number, children, light = false }) {
 }
 
 export function Colophon({ onRSVP }) {
-  const { ref, entranceProgress, reduced, compact } = useScene({ duration: 1.2 });
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
-  const first = useTransform(compact ? entranceProgress : scrollYProgress, [.1, .72], [0, 1]);
-  const second = useTransform(compact ? entranceProgress : scrollYProgress, [.32, .95], [0, 1]);
+  const { ref, progress, reduced } = useScene({ offset: ['start end', 'end end'] });
+  const first = useTransform(progress, [.1, .72], [0, 1]);
+  const second = useTransform(progress, [.32, .95], [0, 1]);
   return <footer ref={ref} className="colophon" id="closing" aria-label="Lời cảm ơn">
     <span className="eyebrow">THƯƠNG GỬI BẠN</span>
     <div className="closing-rings" aria-hidden="true"><svg viewBox="0 0 600 200">

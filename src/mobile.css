@@ -1,4 +1,4 @@
-/* Mobile scenes use normal document flow. Motion is an entrance, not a scroll gate. */
+/* Compact scenes stay in normal flow; their motion scrubs with touch scrolling. */
 @media (max-width: 700px) {
   .film-scene.hero-film, .film-scene.reading-film, .film-scene.montage-film,
   .film-scene.family-film, .film-scene.wave-film, .film-scene.dates-film { height: auto !important; }

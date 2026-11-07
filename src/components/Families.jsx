@@ -45,8 +45,8 @@ function Portrait({ bride = false, progress, reduced, compact }) {
 }
 
 export default function Families() {
-  const { ref, progress, entranceProgress, reduced, compact } = useScene({ duration: .95 });
-  const mobileProgress = useTransform(entranceProgress, [0, 1], [0, .4]);
+  const { ref, progress, reduced, compact } = useScene();
+  const mobileProgress = useTransform(progress, [0, 1], [0, .4]);
   const outlineId = useId();
   return <section id="couple" className="film-scene profiles-film family-film" ref={ref} aria-label="Hai chúng mình — Developer và Designer" style={{ '--family-cutout-outline': `url("#${outlineId}")` }}>
     <svg className="family-filter-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>

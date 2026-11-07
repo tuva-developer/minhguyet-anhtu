@@ -52,7 +52,7 @@ with sync_playwright() as p:
             assert abs(early['x']-settled['x'])>15 and early['y']-settled['y']>40 and settled['scale']-early['scale']>.12,(width,early,settled)
         else:
             assert early == settled, (width, early, settled)
-            assert page.locator('#couple').get_attribute('data-enter-state') == 'done'
+            assert page.locator('#couple').get_attribute('data-scene-mode') == 'scroll'
         page.screenshot(path=str(out/f'{width}-profiles-settled.png'))
         seek(page, .85)
         assert abs(page.locator('.family-name').first.bounding_box()['y']-name_y)<1
