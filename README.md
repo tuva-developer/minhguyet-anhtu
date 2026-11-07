@@ -89,6 +89,10 @@ Kiểm tra desktop/mobile, các khoảng cuộn khác nhau của từng cảnh, 
 
 `ThreadCat.jsx` hiển thị bé mèo trong `public/images/banhbao/` theo đường chỉ đỏ: tiến/lùi và nhún theo cuộn, không chặn thao tác. Chạy `python scripts/check-thread-cat.py --url http://127.0.0.1:5173` để kiểm tra mèo; `scripts/check-photo-handoff.py` kiểm tra bàn giao ảnh và thứ tự lớp trước/sau của chồng ảnh.
 
+`src/lib/threadTrack.js` lưu mẫu thích ứng của đường chỉ để nội suy vị trí và tiếp tuyến, không gọi phép đo SVG ở từng khung hình. Đường chỉ luôn tiến theo chiều dọc và có khoảng chuyển ngang rộng hơn ở các section ngắn. Mèo dùng ngưỡng 8px để xác nhận cuộn ngược, giữ hướng trên đoạn gần thẳng đứng, xoay/quay đầu có độ đệm và nhún nhẹ theo quãng đường; cùng dùng cache cho mèo ở màn mở đầu. Bài kiểm tra mèo kiểm tra thêm đường không vòng ngược, sai số nội suy dưới 1px, không lật hướng khi rung 1px và không đo SVG trong lúc chạy.
+
+Mèo trên trang và đường chỉ cùng nằm trong lớp viewport, dùng chung vị trí cuộn thật. Chỉ góc xoay/quay đầu và nhịp nhún có spring; không làm trễ điểm bám vào đường chỉ. Điều này tránh việc mèo bị kéo lên rồi trả xuống khi lăn chuột trong các cảnh sticky. Bài kiểm tra dùng wheel thật tiến/lùi ở bìa, lời ngỏ, album, chân dung, lời hẹn và ba thiệp để kiểm tra điểm bám ổn định trong lúc cảnh đang ghim.
+
 `python scripts/check-typography.py --url http://127.0.0.1:5173` kiểm tra cỡ chữ phụ trợ, tên không bị cắt, phần giới thiệu/lịch cưới không đè lên thanh cuối màn hình ở 320/390/768/1024/1440px và laptop cao 600px. Ảnh chụp ở `artifacts/typography/`.
 
 `python scripts/check-families.py --url http://127.0.0.1:5173` kiểm tra nghề nghiệp, không còn thông tin phụ huynh, tên đầy đủ, bố cục 320–1440px, chuyển động chân dung rõ ràng, nút lịch cưới, ảnh lỗi và giảm chuyển động. Ảnh chụp ở `artifacts/families-depth/`.

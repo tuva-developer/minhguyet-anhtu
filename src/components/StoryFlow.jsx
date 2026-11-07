@@ -4,6 +4,7 @@ import { CinemaPhoto, useMedia } from './Media';
 import CoverCamera from './CoverCamera';
 import { usePresentation, useSoftScroll } from './Scene';
 import ThreadCat from './ThreadCat';
+import { createThreadTrack } from '../lib/threadTrack';
 
 const clamp = value => Math.max(0, Math.min(1, value));
 const mix = (a, b, p) => a + (b - a) * p;
@@ -99,9 +100,8 @@ export function RedThread({ target }) {
   const reduced = useReducedMotion();
   const path = useRef(null);
   const [track, setTrack] = useState(null);
-  const [size, setSize] = useState({ w: 1000, h: 1000, paths: '', origin: 0, lanes: [] });
+  const [size, setSize] = useState({ w: 1000, h: 1000, viewH: innerHeight, paths: '', origin: 0, lanes: [] });
   const { scrollY } = useScroll();
-  const softY = useSoftScroll(scrollY, window.innerHeight * .85, .1);
   useEffect(() => {
     const root = target.current;
     let disposed = false;
@@ -114,6 +114,7 @@ export function RedThread({ target }) {
         return { top: el.getBoundingClientRect().top + window.scrollY, lane: Number.isFinite(lane) ? lane : .74 };
       });
       let paths = `M ${w * .53} 90`;
+      let previousY = 90;
       scenes.forEach((el, index) => {
         const top = el.getBoundingClientRect().top + window.scrollY - origin;
         const bottom = top + el.offsetHeight;
@@ -121,14 +122,21 @@ export function RedThread({ target }) {
         if (el.id === 'closing') {
           const rings = el.querySelector('.closing-rings svg').getBoundingClientRect();
           const endY = rings.top + window.scrollY - origin + rings.height * .45;
-          paths += ` C ${w * side} ${top + 90}, ${w * side} ${endY}, ${rings.left} ${endY}`;
+          paths += ` C ${w * side} ${mix(previousY, endY, .3)}, ${w * side} ${endY}, ${rings.left} ${endY}`;
           return;
         }
-        paths += ` C ${w * side} ${top + 110}, ${w * side} ${top + 240}, ${w * side} ${top + 350}`;
-        paths += ` C ${w * side} ${top + el.offsetHeight * .45}, ${w * side} ${bottom - 300}, ${w * side} ${bottom - 150}`;
-        paths += ` C ${w * side} ${bottom - 70}, ${w * (1 - side)} ${bottom - 70}, ${w * (1 - side)} ${bottom - 30}`;
+        const height = el.offsetHeight;
+        const lead = Math.min(350, height * .36);
+        const startY = Math.max(previousY, top + Math.min(110, lead * .34));
+        // Every control point advances down the document, even in short mobile
+        // scenes. Backtracking in Y makes inversion skip entire curve segments.
+        paths += ` C ${w * side} ${startY}, ${w * side} ${top + Math.min(240, lead * .7)}, ${w * side} ${top + lead}`;
+        paths += ` C ${w * side} ${top + height * .45}, ${w * side} ${bottom - Math.min(450, height * .4)}, ${w * side} ${bottom - Math.min(300, height * .3)}`;
+        paths += ` C ${w * side} ${bottom - Math.min(210, height * .18)}, ${w * (1 - side)} ${bottom - Math.min(110, height * .09)}, ${w * (1 - side)} ${bottom - Math.min(30, height * .025)}`;
+        previousY = bottom - Math.min(30, height * .025);
       });
-      setSize({ w, h, paths, origin, lanes });
+      const viewH = innerHeight;
+      setSize(current => current.w === w && current.h === h && current.viewH === viewH && current.paths === paths && current.origin === origin && JSON.stringify(current.lanes) === JSON.stringify(lanes) ? current : { w, h, viewH, paths, origin, lanes });
     }
     const observer = new ResizeObserver(measure); observer.observe(root);
     window.addEventListener('resize', measure); measure();
@@ -137,15 +145,13 @@ export function RedThread({ target }) {
   }, [target]);
   useLayoutEffect(() => {
     if (!path.current || !size.paths || reduced) return;
-    const total = path.current.getTotalLength();
-    const points = Array.from({ length: 513 }, (_, index) => {
-      const length = total * index / 512;
-      return { length, y: path.current.getPointAtLength(length).y };
-    });
-    setTrack({ total, points });
+    setTrack(createThreadTrack(path.current));
   }, [size.paths, reduced]);
-  const distance = useTransform(softY, scroll => {
-    if (!track) return 0;
+  // Draw the string and its cat in one viewport layer. Native scrolling must
+  // not subtract a newer offset from a position rendered in an earlier frame.
+  // Only the cat's tilt/trot has follow-through; its anchor shares this clock.
+  const position = useTransform(scrollY, scroll => {
+    if (!track) return { distance: 0, viewportY: 0, offset: size.origin - scroll };
     // Match the path to a visible document position instead of equating its arc
     // length to page height. Wide curves would otherwise send the cat offscreen.
     let lane = .74;
@@ -156,8 +162,9 @@ export function RedThread({ target }) {
     }
     const targetY = scroll + innerHeight * lane - size.origin;
     const points = track.points;
-    if (targetY <= points[0].y) return 0;
-    if (targetY >= points[points.length - 1].y) return track.total;
+    const result = distance => ({ distance, viewportY: Math.max(points[0].y, Math.min(points[points.length - 1].y, targetY)) + size.origin - scroll, offset: size.origin - scroll });
+    if (targetY <= points[0].y) return result(0);
+    if (targetY >= points[points.length - 1].y) return result(track.total);
     let low = 0, high = points.length - 1;
     while (high - low > 1) {
       const middle = (low + high) >> 1;
@@ -165,9 +172,12 @@ export function RedThread({ target }) {
       else high = middle;
     }
     const ratio = clamp((targetY - points[low].y) / Math.max(.0001, points[high].y - points[low].y));
-    return points[low].length + (points[high].length - points[low].length) * ratio;
+    return result(points[low].length + (points[high].length - points[low].length) * ratio);
   });
+  const distance = useTransform(position, value => value.distance);
+  const viewportY = useTransform(position, value => value.viewportY);
+  const offset = useTransform(position, value => value.offset);
   const length = useTransform(distance, value => track?.total ? value / track.total : 0);
   if (reduced) return null;
-  return <><svg className="red-thread" viewBox={`0 0 ${size.w} ${size.h}`} width={size.w} height={size.h} aria-hidden="true"><path className="thread-shadow" d={size.paths} /><motion.path ref={path} d={size.paths} style={{ pathLength: length }} /></svg><ThreadCat path={path} distance={distance} track={track} width={size.w} /></>;
+  return <><svg className="red-thread" viewBox={`0 0 ${size.w} ${size.viewH}`} width={size.w} height={size.viewH} style={{ position: 'fixed' }} aria-hidden="true"><motion.g style={{ y: offset }}><path className="thread-shadow" d={size.paths} /><motion.path ref={path} d={size.paths} style={{ pathLength: length }} /></motion.g></svg><ThreadCat movement={scrollY} viewportY={viewportY} distance={distance} track={track} width={size.w} /></>;
 }

@@ -5,6 +5,7 @@ import { useMedia } from './Media';
 import { ease, prefersReduced } from '../lib/motion';
 import { interval, OPENING_TIMELINE, smoothOpening } from '../lib/openingTimeline';
 import ThreadCat from './ThreadCat';
+import { createThreadTrack } from '../lib/threadTrack';
 
 const THREAD = 'M -40 140 C 100 140 202 110 275 144 C 300 158 330 190 400 238 C 400 238 515 168 516 112 C 518 60 452 40 400 100 C 348 40 282 60 284 112 C 286 168 400 238 400 238 C 478 180 558 128 840 140';
 const TIMING = { draw: 1.95, hold: 2700, deadline: 3700 };
@@ -41,8 +42,10 @@ export default function OpeningSequence({ progress, onComplete, onReveal }) {
   const skip = useCallback(() => { restoreFocus.current = true; reveal(true); }, [reveal]);
 
   useLayoutEffect(() => {
-    length.current = path.current?.getTotalLength() || 0;
-    setCatTrack({ total: length.current });
+    if (!path.current) return;
+    const track = createThreadTrack(path.current);
+    length.current = track.total;
+    setCatTrack(track);
   }, []);
   useEffect(() => {
     if (reduced) { onComplete(); return; }
@@ -105,7 +108,7 @@ export default function OpeningSequence({ progress, onComplete, onReveal }) {
         <motion.path ref={path} d={THREAD} style={{ pathLength: draw }} />
         <motion.circle r="3.5" style={{ cx: tipX, cy: tipY, opacity: tipOpacity }} />
         <motion.foreignObject className="intro-cat-layer" x="0" y="0" width="800" height="270" style={{ opacity: tipOpacity }}>
-          <ThreadCat className="intro-thread-cat" path={path} distance={catDistance} track={catTrack} width={800} size={innerWidth <= 700 ? 160 : 112} keepInBounds={false} />
+          <ThreadCat className="intro-thread-cat" distance={catDistance} track={catTrack} width={800} size={innerWidth <= 700 ? 160 : 112} keepInBounds={false} />
         </motion.foreignObject>
       </svg>
       <motion.p className="intro-title" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .65, duration: 1, ease }}>Chuyện mình,<br /><em>bắt đầu từ đây.</em></motion.p>
