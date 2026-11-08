@@ -108,6 +108,51 @@ with sync_playwright() as p:
                     assert max(row['y'] for row in live)-min(row['y'] for row in live)<2,(width,selector,delta,live)
                     assert max(row['gap'] for row in live)<2,(width,selector,delta,live)
             print(f'PASS {width}px: stable viewport anchor during live forward/reverse wheel input in every pinned scene.',flush=True)
+        else:
+            seek(page,'#opening',0)
+            client=page.context.new_cdp_session(page)
+            for reverse in [False,True]:
+                page.evaluate('''()=>{
+                  window.threadTouchFrames=[];let count=0;
+                  const read=()=>{
+                    const path=document.querySelector('.red-thread path:last-child');
+                    const root=document.querySelector('main');
+                    const origin=root.getBoundingClientRect().top+scrollY;
+                    const matrix=path.getScreenCTM();
+                    const length=parseFloat(getComputedStyle(path).strokeDasharray)*path.getTotalLength();
+                    const point=path.getPointAtLength(length);
+                    const screen=new DOMPoint(point.x,point.y).matrixTransform(matrix);
+                    const cat=document.querySelector('.thread-cat').getBoundingClientRect();
+                    window.threadTouchFrames.push({scroll:scrollY,contentGap:Math.abs(matrix.f+scrollY-origin),catGap:Math.abs(cat.y+cat.height/2-screen.y)});
+                    if(count++<100)requestAnimationFrame(read);
+                  };
+                  requestAnimationFrame(read);
+                }''')
+                start,end=(height*.25,height*.8) if reverse else (height*.8,height*.25)
+                client.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':width*.85,'y':start}]})
+                for i in range(1,27):
+                    y=start+(end-start)*i/26
+                    client.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':width*.85,'y':y}]})
+                    page.wait_for_timeout(17)
+                client.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
+                page.wait_for_timeout(1200)
+                frames=page.evaluate('window.threadTouchFrames')
+                assert max(p['scroll'] for p in frames)-min(p['scroll'] for p in frames)>100
+                assert max(p['contentGap'] for p in frames)<1,(width,reverse,frames)
+                assert max(p['catGap'] for p in frames)<2,(width,reverse,frames)
+            # Browser chrome can change innerHeight without changing 100svh.
+            before=page.evaluate('''()=>({path:document.querySelector('.red-thread path:last-child').getAttribute('d'),y:document.querySelector('.thread-cat').getBoundingClientRect().y})''')
+            page.evaluate('''()=>{
+              window.savedThreadViewport=Object.getOwnPropertyDescriptor(window,'innerHeight');
+              const current=innerHeight;
+              Object.defineProperty(window,'innerHeight',{configurable:true,value:current+60});
+              dispatchEvent(new Event('resize'));
+            }''')
+            page.wait_for_timeout(300)
+            after=page.evaluate('''()=>({path:document.querySelector('.red-thread path:last-child').getAttribute('d'),y:document.querySelector('.thread-cat').getBoundingClientRect().y})''')
+            assert before['path']==after['path'] and abs(before['y']-after['y'])<1,(width,before,after)
+            page.evaluate('''()=>{Object.defineProperty(window,'innerHeight',window.savedThreadViewport);dispatchEvent(new Event('resize'));}''')
+            print(f'PASS {width}px: real touch/momentum/reverse keeps the line aligned with native content; browser chrome changes do not move its anchor.',flush=True)
         assert page.locator('.thread-cat').evaluate('(el)=>getComputedStyle(el).pointerEvents')=='none'
         print(f'PASS {width}px: monotonic path, subpixel cache, no per-frame SVG queries, smooth turns, no jitter flips, stays on thread/in bounds.',flush=True)
         page.close()

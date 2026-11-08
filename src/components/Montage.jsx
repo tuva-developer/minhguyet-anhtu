@@ -17,12 +17,15 @@ function Tile({ photo, index, count, progress, compact, reduced, phase, viewport
     const cols = count === 1 ? 1 : compact ? 2 : count <= 4 ? 2 : 3;
     const rows = Math.ceil(count / cols), gap = compact ? 10 : 18;
     const gridWidth = w * (count === 1 ? compact ? .68 : .36 : compact ? .88 : .72);
-    const gridHeight = h * .59;
+    const shortViewport = !compact && h <= 500;
+    const gridTop = h <= 360 ? 96 : 128;
+    const gridHeight = shortViewport ? Math.max(60, h - gridTop - 102) : h * .59;
     const tileW = (gridWidth - gap * (cols - 1)) / cols;
     const tileH = (gridHeight - gap * (rows - 1)) / rows;
     const col = index % cols, row = Math.floor(index / cols);
     const gx = -gridWidth / 2 + col * (tileW + gap) + tileW / 2;
-    const gy = -gridHeight / 2 + row * (tileH + gap) + tileH / 2 + h * .035;
+    const gridOffset = shortViewport ? gridTop + gridHeight / 2 - h / 2 : h * .035;
+    const gy = -gridHeight / 2 + row * (tileH + gap) + tileH / 2 + gridOffset;
     const assemble = ease((p - .14 - index * .012) / .30);
     const expand = ease((p - .64) / .34);
     const sw = w * (compact ? .62 : .30), sh = h * .59;

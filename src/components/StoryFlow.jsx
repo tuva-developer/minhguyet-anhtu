@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { CinemaPhoto, useMedia } from './Media';
 import CoverCamera from './CoverCamera';
 import { usePresentation, useSoftScroll } from './Scene';
@@ -97,11 +97,14 @@ export function StoryFlow({ children, openingProgress }) {
 }
 
 export function RedThread({ target }) {
-  const reduced = useReducedMotion();
+  const { compact, reduced } = usePresentation();
   const path = useRef(null);
+  const viewport = useRef(null);
   const [track, setTrack] = useState(null);
   const [size, setSize] = useState({ w: 1000, h: 1000, viewH: innerHeight, paths: '', origin: 0, lanes: [] });
   const { scrollY } = useScroll();
+  const touchScroll = useMotionValue(0);
+  const touchPosition = useMotionValue({ distance: 0, viewportY: 0, offset: 0 });
   useEffect(() => {
     const root = target.current;
     let disposed = false;
@@ -135,7 +138,7 @@ export function RedThread({ target }) {
         paths += ` C ${w * side} ${bottom - Math.min(210, height * .18)}, ${w * (1 - side)} ${bottom - Math.min(110, height * .09)}, ${w * (1 - side)} ${bottom - Math.min(30, height * .025)}`;
         previousY = bottom - Math.min(30, height * .025);
       });
-      const viewH = innerHeight;
+      const viewH = viewport.current?.clientHeight || innerHeight;
       setSize(current => current.w === w && current.h === h && current.viewH === viewH && current.paths === paths && current.origin === origin && JSON.stringify(current.lanes) === JSON.stringify(lanes) ? current : { w, h, viewH, paths, origin, lanes });
     }
     const observer = new ResizeObserver(measure); observer.observe(root);
@@ -147,20 +150,20 @@ export function RedThread({ target }) {
     if (!path.current || !size.paths || reduced) return;
     setTrack(createThreadTrack(path.current));
   }, [size.paths, reduced]);
-  // Draw the string and its cat in one viewport layer. Native scrolling must
-  // not subtract a newer offset from a position rendered in an earlier frame.
-  // Only the cat's tilt/trot has follow-through; its anchor shares this clock.
-  const position = useTransform(scrollY, scroll => {
+  // Desktop shares one viewport layer; mobile lets the browser scroll the
+  // document path natively. Both use the same position for the line and cat,
+  // with follow-through reserved for the cat's tilt/trot.
+  const locate = scroll => {
     if (!track) return { distance: 0, viewportY: 0, offset: size.origin - scroll };
     // Match the path to a visible document position instead of equating its arc
     // length to page height. Wide curves would otherwise send the cat offscreen.
     let lane = .74;
     for (const next of size.lanes) {
-      const start = next.top - innerHeight * .45;
+      const start = next.top - size.viewH * .45;
       if (scroll < start) break;
-      lane = mix(lane, next.lane, smooth((scroll - start) / (innerHeight * .6)));
+      lane = mix(lane, next.lane, smooth((scroll - start) / (size.viewH * .6)));
     }
-    const targetY = scroll + innerHeight * lane - size.origin;
+    const targetY = scroll + size.viewH * lane - size.origin;
     const points = track.points;
     const result = distance => ({ distance, viewportY: Math.max(points[0].y, Math.min(points[points.length - 1].y, targetY)) + size.origin - scroll, offset: size.origin - scroll });
     if (targetY <= points[0].y) return result(0);
@@ -173,11 +176,36 @@ export function RedThread({ target }) {
     }
     const ratio = clamp((targetY - points[low].y) / Math.max(.0001, points[high].y - points[low].y));
     return result(points[low].length + (points[high].length - points[low].length) * ratio);
-  });
+  };
+  const fixedPosition = useTransform(scrollY, locate);
+  const position = compact ? touchPosition : fixedPosition;
+  useLayoutEffect(() => {
+    if (!compact || reduced) return;
+    const update = () => {
+      const scroll = window.scrollY;
+      touchScroll.set(scroll);
+      const next = locate(scroll);
+      touchPosition.set(next);
+      if (path.current) path.current.style.strokeDasharray = `${track?.total ? next.distance / track.total : 0}px 1px`;
+    };
+    // A passive native event writes both anchors before paint, without routing
+    // the line translation through Framer's derived/render frame queues.
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+    return () => window.removeEventListener('scroll', update);
+  }, [compact, reduced, track, size, touchPosition, touchScroll]);
   const distance = useTransform(position, value => value.distance);
   const viewportY = useTransform(position, value => value.viewportY);
   const offset = useTransform(position, value => value.offset);
   const length = useTransform(distance, value => track?.total ? value / track.total : 0);
   if (reduced) return null;
-  return <><svg className="red-thread" viewBox={`0 0 ${size.w} ${size.viewH}`} width={size.w} height={size.viewH} style={{ position: 'fixed' }} aria-hidden="true"><motion.g style={{ y: offset }}><path className="thread-shadow" d={size.paths} /><motion.path ref={path} d={size.paths} style={{ pathLength: length }} /></motion.g></svg><ThreadCat movement={scrollY} viewportY={viewportY} distance={distance} track={track} width={size.w} /></>;
+  return <>
+    <div ref={viewport} aria-hidden="true" style={{ position: 'fixed', width: 0, height: '100svh', visibility: 'hidden', pointerEvents: 'none' }} />
+    {compact ? <svg className="red-thread" viewBox={`0 0 ${size.w} ${size.h}`} width={size.w} height={size.h} aria-hidden="true">
+      <path className="thread-shadow" d={size.paths} /><path ref={path} d={size.paths} pathLength="1" style={{ strokeDasharray: '0px 1px' }} />
+    </svg> : <svg className="red-thread" viewBox={`0 0 ${size.w} ${size.viewH}`} width={size.w} height={size.viewH} style={{ position: 'fixed' }} aria-hidden="true">
+      <motion.g style={{ y: offset }}><path className="thread-shadow" d={size.paths} /><motion.path ref={path} d={size.paths} style={{ pathLength: length }} /></motion.g>
+    </svg>}
+    <ThreadCat movement={compact ? touchScroll : scrollY} viewportY={compact ? undefined : viewportY} nativePosition={compact ? touchPosition : undefined} distance={distance} track={track} width={size.w} />
+  </>;
 }

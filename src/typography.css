@@ -262,6 +262,70 @@ h1, h2, h3 { font-weight: 500; letter-spacing: -.025em; }
   .colophon h2 { font-size: 42px; }
 }
 
+/* Leave room for the fixed header and scene controls on landscape phones. */
+@media (max-height: 500px) and (min-width: 701px) {
+  .hero-prelude { top: 90px; font-size: 10px; }
+  .name-upper { top: max(118px, 28%); }
+  .hero-revelation { top: 54%; }
+  .hero-revelation > .cinema-kicker { font-size: 10px; line-height: 1.5; }
+  .hero-revelation > p { font-size: clamp(32px, 9svh, 44px); line-height: 1.05; margin: 12px 0; }
+  .hero-revelation .hero-promise { font-size: 10px; line-height: 1.6; max-width: 280px; }
+  .reading-stage .reading-content { top: 54%; }
+  .reading-content > .cinema-kicker { font-size: 10px; line-height: 1.5; margin-bottom: 10px; }
+  .reading-content h2 { font-size: clamp(28px, 8svh, 36px); line-height: 1.12; }
+  .reading-content > p { font-size: 12px; line-height: 1.6; }
+  .reading-rule { margin: 12px 0 10px; }
+  .reading-image figcaption { display: none; }
+  .wave-stage { padding: 100px 5% 66px; justify-content: center; gap: 12px; }
+  .wave-stage .wave-kicker { position: static; font-size: 10px; line-height: 1.5; }
+  .wave-stage .wave-type { padding: 0; font-size: clamp(32px, 10svh, 48px); line-height: 1.2; }
+  .wave-stage .wave-underline { margin: 0; }
+  .wave-stage .wave-caption { margin: 0; font-size: 10px; line-height: 1.5; }
+  .date-panel .date-scene-number { top: 92px; font-size: 10px; }
+  .date-panel .date-main-copy { top: 116px; }
+  .date-main-copy > .cinema-kicker { display: none; }
+  .date-main-copy h2 { margin-top: 0; font-size: clamp(30px, 10svh, 42px); }
+  .date-panel .date-venue { font-size: 18px; line-height: 1.25; margin-top: 8px; }
+  .date-panel .date-primary-time { margin-top: 14px; gap: 4px 14px; }
+  .date-primary-time > span { font-size: 10px; line-height: 1.5; }
+  .date-primary-time > strong { font-size: 34px; line-height: 1; }
+  .date-primary-time > small { font-size: 11px; line-height: 1.4; margin-top: 0; }
+  .date-panel .date-actions { margin-top: 8px; }
+  .date-panel .date-rsvp-link { min-height: 36px; padding: 8px 0; font-size: 12px; }
+  .date-panel .date-giant { top: 116px; }
+  .date-giant time { font-size: clamp(72px, 23svh, 110px); }
+  .date-giant > p { margin-top: 12px; font-size: 10px; }
+  .date-panel .date-bottom-line { display: none; }
+}
+
+@media (max-height: 500px) and (min-width: 701px) and (prefers-reduced-motion: no-preference) {
+  .montage-stage .reel-heading { top: 90px; }
+  .montage-stage .reel-heading > .cinema-kicker { display: none; }
+  .montage-stage .reel-heading > p { font-size: 24px; line-height: 1.1; }
+  .montage-stage .reel-counter { font-size: 22px; min-width: 72px; }
+  .reel-counter small { font-size: 8px; margin-top: 3px; }
+  .montage-stage .reel-controls { bottom: 60px; }
+  .montage-stage .reel-contact-toggle, .montage-stage .montage-view-grid { font-size: 10px; line-height: 1.5; padding: 6px 0; gap: 8px; }
+  .montage-stage .montage-view-grid span { font-size: 14px; }
+  .montage-tile .reel-photo-caption { font-size: 13px; line-height: 1.2; padding: 20px 8px 8px; gap: 6px; }
+  .montage-tile .reel-photo-caption small { font-size: 8px; }
+}
+@media (max-height: 360px) and (min-width: 701px) and (prefers-reduced-motion: no-preference) {
+  .date-panel .date-scene-number { top: 88px; }
+  .date-panel .date-main-copy { top: 108px; }
+  .date-main-copy h2 { font-size: 30px; }
+  .date-panel .date-venue { font-size: 16px; margin-top: 4px; }
+  .date-panel .date-primary-time { margin-top: 8px; gap: 0 12px; }
+  .date-primary-time > strong { font-size: 28px; }
+  .date-panel .date-actions { margin-top: 4px; }
+  .date-panel .date-rsvp-link { min-height: 30px; padding: 5px 0; }
+  .date-panel .date-giant { top: 108px; }
+  .date-giant time { font-size: 64px; }
+  .date-giant > p { margin-top: 6px; }
+  .montage-stage .reel-heading { display: none; }
+  .wave-stage { gap: 8px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .montage-stage .reel-heading { top: auto; }
   .montage-tile .reel-photo-caption { font-size: 20px; }

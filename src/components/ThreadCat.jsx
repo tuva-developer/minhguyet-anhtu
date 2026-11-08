@@ -1,11 +1,29 @@
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useMotionValueEvent, useSpring, useTransform } from 'framer-motion';
 import { sampleThreadTrack } from '../lib/threadTrack';
 
 const CAT_IMAGE = '/images/banhbao/banhbao.png';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-export default function ThreadCat({ distance, movement = distance, viewportY, track, width, size, keepInBounds = true, className = '' }) {
+// Native touch scroll can run ahead of the animation frame queue. Place the
+// document anchor synchronously; keep spring animation on secondary motion.
+function NativeCatAnchor({ position, track, width, catWidth, catHeight, keepInBounds, rotate, className, opacity, children }) {
+  const ref = useRef(null);
+  useLayoutEffect(() => {
+    const place = () => {
+      if (!ref.current || !track) return;
+      const point = sampleThreadTrack(track, position.get().distance);
+      const x = keepInBounds ? clamp(point.x - catWidth / 2, 8, width - catWidth - 8) : point.x - catWidth / 2;
+      ref.current.style.transform = `translate3d(${x}px, ${point.y - catHeight / 2}px, 0) rotate(${rotate.get()}deg)`;
+    };
+    const offPosition = position.on('change', place), offRotation = rotate.on('change', place);
+    place();
+    return () => { offPosition(); offRotation(); };
+  }, [position, track, width, catWidth, catHeight, keepInBounds, rotate]);
+  return <div ref={ref} className={className} aria-hidden="true" style={{ position: 'absolute', width: catWidth, height: catHeight, opacity }}>{children}</div>;
+}
+
+export default function ThreadCat({ distance, movement = distance, viewportY, nativePosition, track, width, size, keepInBounds = true, className = '' }) {
   const turn = useRef({ sign: 1, extreme: movement.get() });
   const forwardFacing = useRef(-1);
   const direction = useMotionValue(1);
@@ -53,9 +71,12 @@ export default function ThreadCat({ distance, movement = distance, viewportY, tr
   const hop = useSpring(hopTarget, { stiffness: 240, damping: 25, mass: .4 });
   const rock = useSpring(rockTarget, { stiffness: 220, damping: 26, mass: .4 });
   if (failed) return null;
+  const body = <motion.div className="thread-cat-body" style={{ y: hop, rotate: rock, scaleX }}>
+    <img src={CAT_IMAGE} width={2048} height={768} alt="" draggable="false" decoding="async" onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />
+  </motion.div>;
+  if (nativePosition) return <NativeCatAnchor position={nativePosition} track={track} width={width} catWidth={catWidth} catHeight={catHeight}
+    keepInBounds={keepInBounds} rotate={rotate} className={`thread-cat ${className}`} opacity={loaded && track ? 1 : 0}>{body}</NativeCatAnchor>;
   return <motion.div className={`thread-cat ${className}`} aria-hidden="true" style={{ position: viewportY ? 'fixed' : 'absolute', x, y, rotate, width: catWidth, height: catHeight, opacity: loaded && track ? 1 : 0 }}>
-    <motion.div className="thread-cat-body" style={{ y: hop, rotate: rock, scaleX }}>
-      <img src={CAT_IMAGE} width={2048} height={768} alt="" draggable="false" decoding="async" onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />
-    </motion.div>
+    {body}
   </motion.div>;
 }
