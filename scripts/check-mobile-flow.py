@@ -1,4 +1,4 @@
-"""Mobile scroll scrubbing, natural flow, interactions and breakpoint regressions.
+"""Mobile timed entrances, natural flow, interactions and breakpoint regressions.
 
 Run against Vite: python scripts/check-mobile-flow.py --url http://127.0.0.1:5173
 Screenshots are written to ignored artifacts/mobile-flow/.
@@ -59,8 +59,8 @@ with sync_playwright() as p:
         page.goto(args.url, wait_until='domcontentloaded')
         page.locator('.opening-intro').wait_for(state='visible')
         if page.locator('.opening-intro').count():
-            expect(page.locator('#opening')).to_have_attribute('data-scene-mode', 'scroll')
-            assert page.locator('.reading-content h2 > span').first.evaluate('el=>+getComputedStyle(el).opacity') <= .18
+            expect(page.locator('#opening')).to_have_attribute('data-scene-mode', 'enter')
+            assert page.locator('.reading-content h2 > span').first.evaluate('el=>+getComputedStyle(el).opacity') <= .25
             page.get_by_role('button', name='Bỏ qua').click()
         page.locator('.opening-intro').wait_for(state='detached')
         page.wait_for_timeout(500)
@@ -72,24 +72,21 @@ with sync_playwright() as p:
         healthy(page)
         page.screenshot(path=str(out / f'{width}-home.png'))
 
-        # Scroll is the clock: reverse restores the pose; pausing does not autoplay.
+        # Entrances finish while paused and remain complete when revisiting.
         for selector, name in [('#opening', 'letter'), ('.reel-film', 'album'), ('#couple', 'profiles'), ('.wave-film', 'wave')]:
             child = {'letter': '.reading-rule', 'album': '.mobile-album-tile', 'profiles': '.family-subject-frame', 'wave': '.wave-row'}[name]
-            scrub(page, selector, .2)
-            early = motion_state(page, selector + ' ' + child)
-            scrub(page, selector, .8)
-            later = motion_state(page, selector + ' ' + child)
-            assert max(abs(a-b) for a,b in zip(early,later)) > .05, (width,name,early,later)
+            group = {'letter': '.reading-content', 'album': '.montage-space', 'profiles': '.family-spread', 'wave': '.wave-type'}[name]
+            jump(page, selector, 100)
             scroll = page.evaluate('scrollY')
-            page.wait_for_timeout(400)
-            paused = motion_state(page, selector + ' ' + child)
+            page.wait_for_timeout(1400)
+            expect(page.locator(selector + ' ' + group)).to_have_attribute('data-enter-state', 'complete')
+            later = motion_state(page, selector + ' ' + child)
             assert abs(page.evaluate('scrollY') - scroll) < 1
-            assert max(abs(a-b) for a,b in zip(paused,later)) < .5, (width,name,'autoplay while paused')
             scrub(page, selector, .2)
             reverse = motion_state(page, selector + ' ' + child)
-            assert max(abs(a-b) for a,b in zip(early,reverse)) < 1.5, (width,name,early,reverse)
+            assert max(abs(a-b) for a,b in zip(later,reverse)) < .1, (width,name,'entrance replayed')
             jump(page, selector, 700)
-            expect(page.locator(selector)).to_have_attribute('data-scene-mode', 'scroll')
+            expect(page.locator(selector)).to_have_attribute('data-scene-mode', 'enter')
             stage = page.locator(selector + ' > .film-stage')
             assert stage.evaluate('(el)=>getComputedStyle(el).position') == 'relative'
             scene_height = page.locator(selector).bounding_box()['height']
@@ -109,8 +106,8 @@ with sync_playwright() as p:
         assert page.locator('.family-bride svg.family-subject').get_attribute('data-original-src') == site['bridePortrait']['src']
         assert page.locator('.family-stage .scene-hud > div:first-child > span:last-child').is_visible()
 
-        jump(page, '.reel-film')  # Fully in view, the scrubbed fan reaches its grid.
-        expect(page.locator('.reel-film')).to_have_attribute('data-scene-mode', 'scroll')
+        jump(page, '.reel-film')
+        expect(page.locator('.reel-film')).to_have_attribute('data-scene-mode', 'enter')
         tiles = page.locator('.mobile-album-tile')
         ids = tiles.evaluate_all('(els)=>els.map(el=>el.dataset.photoId)')
         assert len(ids) == len(set(ids)) == 4
@@ -155,7 +152,7 @@ with sync_playwright() as p:
             # Native scrollIntoView can round fractional document positions.
             assert abs(nav.bounding_box()['y'] - 66) < 2, (width,event['id'],nav.bounding_box(),panel.bounding_box(),page.evaluate('scrollY'))
             expect(nav.locator('button[aria-current]')).to_have_attribute('aria-controls', f'event-{event["id"]}')
-            expect(panel).to_have_attribute('data-scene-mode', 'scroll')
+            expect(panel).to_have_attribute('data-scene-mode', 'enter')
             assert panel.evaluate('(el)=>getComputedStyle(el).position') == 'relative'
             assert panel.get_attribute('aria-hidden') == 'false'
             assert panel.get_attribute('inert') is None
@@ -171,7 +168,7 @@ with sync_playwright() as p:
             expect(page.get_by_role('dialog', name='Xác nhận tham dự')).to_be_visible()
             if i == 2 and width == 390:
                 page.locator('#rsvp-name').fill('Mobile guest')
-                page.get_by_role('button', name='Gửi lời hẹn', exact=False).click()
+                page.get_by_role('button', name='Gửi xác nhận', exact=True).click()
                 expect(page.locator('.rsvp-success')).to_be_visible()
             page.keyboard.press('Escape')
             page.get_by_role('dialog').wait_for(state='detached')
@@ -183,7 +180,7 @@ with sync_playwright() as p:
         page.get_by_role('button', name='Mở mục lục').tap()
         page.get_by_role('dialog', name='Mục lục').get_by_role('button', name='Lời ngỏ', exact=False).tap()
         page.wait_for_function('Math.abs(document.getElementById("opening").getBoundingClientRect().top)<2')
-        expect(page.locator('#opening')).to_have_attribute('data-scene-mode', 'scroll')
+        expect(page.locator('#opening')).to_have_attribute('data-scene-mode', 'enter')
         if width == 390:
             jump(page, '#wishes')
             page.locator('#wish-name').fill('Mobile guest')
@@ -199,11 +196,11 @@ with sync_playwright() as p:
         jump(page, '#closing')
         page.evaluate('scrollTo({top:document.documentElement.scrollHeight,behavior:"instant"})')
         page.wait_for_timeout(700)
-        expect(page.locator('#closing')).to_have_attribute('data-scene-mode', 'scroll')
+        expect(page.locator('#closing')).to_have_attribute('data-scene-mode', 'enter')
         assert page.locator('.closing-rings path').evaluate_all('(els)=>els.every(el=>parseFloat(el.getAttribute("stroke-dasharray"))>.99)')
         page.screenshot(path=str(out / f'{width}-closing.png'))
         healthy(page)
-        print(f'PASS {width}px: reversible scroll scrubbing, no autoplay, compact flow, grid, keyboard/lightbox, 3 RSVP, menu, rings, no overflow.', flush=True)
+        print(f'PASS {width}px: timed entrances settle without scrolling, compact flow, grid, keyboard/lightbox, 3 RSVP, menu, rings, no overflow.', flush=True)
         if width == 390:
             page.reload(wait_until='domcontentloaded')
             page.locator('.opening-intro').wait_for(state='visible')
@@ -229,9 +226,9 @@ with sync_playwright() as p:
     assert page.locator('.cinema-names').evaluate('el=>+getComputedStyle(el).opacity') == 1
     jump(page, '#closing', 120)
     for selector in ['#opening', '.reel-film', '#couple', '.wave-film', '.date-panel']:
-        assert page.locator(selector).evaluate_all('(els)=>els.every(el=>el.dataset.sceneMode==="scroll")'), selector
+        assert page.locator(selector).evaluate_all('(els)=>els.every(el=>el.dataset.sceneMode==="enter")'), selector
     jump(page, '#couple', 50)
-    expect(page.locator('#couple')).to_have_attribute('data-scene-mode', 'scroll')
+    expect(page.locator('#couple')).to_have_attribute('data-scene-mode', 'enter')
     for width in [701, 768, 1024, 1440, 700, 390]:
         page.set_viewport_size({'width': width, 'height': 900 if width > 700 else 844})
         jump(page, '#home', 700)
@@ -294,7 +291,7 @@ with sync_playwright() as p:
         else:
             assert page.locator('#story').count() == 0
             page.get_by_role('button', name='Mở mục lục').tap()
-            assert page.get_by_role('dialog').get_by_role('button', name='Trang ảnh', exact=False).count() == 0
+            assert page.get_by_role('dialog').get_by_role('button', name='Album', exact=False).count() == 0
             page.keyboard.press('Escape')
         healthy(page)
         page.close()

@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
+import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useMedia } from './Media';
-import { ease, prefersReduced } from '../lib/motion';
+import { prefersReduced } from '../lib/motion';
 import { interval, OPENING_TIMELINE, smoothOpening } from '../lib/openingTimeline';
-import ThreadCat from './ThreadCat';
-import { createThreadTrack } from '../lib/threadTrack';
+import { story } from '../data/story';
+import { usePresentation } from './Scene';
 
 const THREAD = 'M -40 140 C 100 140 202 110 275 144 C 300 158 330 190 400 238 C 400 238 515 168 516 112 C 518 60 452 40 400 100 C 348 40 282 60 284 112 C 286 168 400 238 400 238 C 478 180 558 128 840 140';
-const TIMING = { draw: 1.95, hold: 2700, deadline: 3700 };
+const TIMING = { draw: 1.95, hold: 2700, deadline: 3700, fontWait: 950 };
+const titleHidden = row => ({ opacity: 0, x: row ? 30 : -30, y: 32, rotate: row ? 1 : -1 });
+const titleVisible = { opacity: 1, x: 0, y: 0, rotate: 0 };
 
 export function shouldPlayOpening() {
   const navigation = performance.getEntriesByType('navigation')[0];
@@ -17,11 +19,11 @@ export function shouldPlayOpening() {
 
 export default function OpeningSequence({ progress, onComplete, onReveal }) {
   const { cover } = useMedia();
-  const reduced = useReducedMotion();
+  const { reduced } = usePresentation();
+  const [fontState, setFontState] = useState('pending');
   const [opening, setOpening] = useState(false);
   const path = useRef(null);
   const length = useRef(0);
-  const [catTrack, setCatTrack] = useState(null);
   const root = useRef(null);
   const button = useRef(null);
   const restoreFocus = useRef(false);
@@ -31,7 +33,6 @@ export default function OpeningSequence({ progress, onComplete, onReveal }) {
   const tipX = useTransform(point, p => p.x);
   const tipY = useTransform(point, p => p.y);
   const tipOpacity = useTransform(draw, [0, .03, .95, 1], [0, 1, 1, 0]);
-  const catDistance = useTransform(draw, value => value * length.current);
   const curtain = useTransform(progress, value => smoothOpening(interval(value, 0, OPENING_TIMELINE.curtainEnd)));
   const leftX = useTransform(curtain, value => `${value * -105}%`);
   const rightX = useTransform(curtain, value => `${value * 105}%`);
@@ -41,11 +42,21 @@ export default function OpeningSequence({ progress, onComplete, onReveal }) {
   const reveal = useCallback((skip = false) => { setOpening(true); onReveal?.(skip); }, [onReveal]);
   const skip = useCallback(() => { restoreFocus.current = true; reveal(true); }, [reveal]);
 
+  useEffect(() => {
+    let disposed = false, timeout;
+    const serif = getComputedStyle(document.documentElement).getPropertyValue('--serif').split(',')[0].trim();
+    const fonts = document.fonts && serif ? Promise.all([
+      document.fonts.load(`500 64px ${serif}`, story.opening.title[0]),
+      document.fonts.load(`italic 400 56px ${serif}`, story.opening.title[1]),
+    ]).then(faces => faces.every(face => face.length) ? 'ready' : 'fallback').catch(() => 'fallback') : Promise.resolve('fallback');
+    Promise.race([fonts, new Promise(resolve => { timeout = setTimeout(() => resolve('fallback'), TIMING.fontWait); })])
+      .then(state => { if (!disposed) setFontState(state); clearTimeout(timeout); });
+    return () => { disposed = true; clearTimeout(timeout); };
+  }, []);
+
   useLayoutEffect(() => {
     if (!path.current) return;
-    const track = createThreadTrack(path.current);
-    length.current = track.total;
-    setCatTrack(track);
+    length.current = path.current.getTotalLength();
   }, []);
   useEffect(() => {
     if (reduced) { onComplete(); return; }
@@ -103,20 +114,21 @@ export default function OpeningSequence({ progress, onComplete, onReveal }) {
     <motion.div className="intro-paper intro-paper-right" aria-hidden="true" initial={false}
       style={{ x: rightX, scaleX: gather }} />
     <motion.div className="intro-content" style={{ opacity: contentOpacity }}>
-      <motion.span className="intro-eyebrow" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .15, duration: .6 }}>CÓ MỘT SỢI DUYÊN</motion.span>
       <svg className="intro-thread" viewBox="0 0 800 270" aria-hidden="true">
         <motion.path ref={path} d={THREAD} style={{ pathLength: draw }} />
         <motion.circle r="3.5" style={{ cx: tipX, cy: tipY, opacity: tipOpacity }} />
-        <motion.foreignObject className="intro-cat-layer" x="0" y="0" width="800" height="270" style={{ opacity: tipOpacity }}>
-          <ThreadCat className="intro-thread-cat" distance={catDistance} track={catTrack} width={800} size={innerWidth <= 700 ? 160 : 112} keepInBounds={false} />
-        </motion.foreignObject>
       </svg>
-      <motion.p className="intro-title" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .65, duration: 1, ease }}>Chuyện mình,<br /><em>bắt đầu từ đây.</em></motion.p>
-      <motion.span className="intro-caption" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: .85 }}>Mời bạn mở một ngày thật đẹp.</motion.span>
+      <p className={`intro-title ${fontState === 'ready' ? '' : 'uses-fallback'}`} data-font-state={fontState}>
+        {story.opening.title.map((line, row) => <span className="intro-title-line" key={line}>
+          <motion.span className="intro-line-text" initial={titleHidden(row)} animate={fontState === 'pending' ? titleHidden(row) : titleVisible}
+            transition={{ delay: row * .22, duration: 1, ease: [.25, .1, .25, 1] }}>
+            {row ? <em>{line}</em> : line}
+          </motion.span>
+        </span>)}
+      </p>
     </motion.div>
     <motion.div className="intro-bottom" animate={{ opacity: opening ? 0 : 1 }} transition={{ duration: .15 }}>
-      <span>26.12.2026 — 30.01.2027</span>
-      <button ref={button} onClick={skip} disabled={opening} aria-label="Bỏ qua hiệu ứng mở đầu">Mở thiệp ngay <ArrowUpRight size={16} /></button>
+      <button ref={button} onClick={skip} disabled={opening} aria-label="Bỏ qua hiệu ứng mở đầu">{story.opening.action} <ArrowUpRight size={16} /></button>
     </motion.div>
   </motion.div>;
 }

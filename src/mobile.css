@@ -1,4 +1,4 @@
-/* Compact scenes stay in normal flow; their motion scrubs with touch scrolling. */
+/* Compact scenes stay in normal flow; artwork reveals itself once on entry. */
 @media (max-width: 700px) {
   .film-scene.hero-film, .film-scene.reading-film, .film-scene.montage-film,
   .film-scene.family-film, .film-scene.wave-film, .film-scene.dates-film { height: auto !important; }
@@ -22,7 +22,7 @@
   .reading-rule { margin: 22px 0 18px; }
   .reading-stage .reading-image { position: relative; grid-row: 1; justify-self: end; top: auto; right: auto; width: 58%; height: auto; rotate: 0deg; margin: 0; visibility: visible; }
   .reading-image > img { width: 100%; height: clamp(170px, 26svh, 235px); object-fit: cover; object-position: 50% 25% !important; }
-  .reading-image figcaption { font-size: 15px; margin-top: 8px; }
+  .reading-image figcaption { font-size: 15px; margin-top: 8px; text-wrap: balance; }
   .reading-backword { bottom: 4%; opacity: .45; }
 
   .montage-stage { display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: 104px 6% 100px; }
@@ -36,7 +36,7 @@
   .mobile-album-grid .mobile-album-tile { position: relative; left: auto; top: auto; width: 100%; height: 100%; min-height: 0; margin: 0; translate: none; }
   .mobile-album-tile .reel-photo-button, .mobile-album-tile .reel-surface { width: 100%; height: 100%; }
   .mobile-album-tile .reel-surface > img { width: 100%; height: 100%; object-fit: cover; }
-  .mobile-album-tile .reel-photo-caption { position: absolute; bottom: 0; left: 0; right: 0; opacity: 1; font-size: 15px; line-height: 1.15; text-align: left; padding: 28px 8px 10px; background: linear-gradient(transparent, #1d1119c9); }
+  .mobile-album-tile .reel-photo-caption { position: absolute; bottom: 0; left: 0; right: 0; opacity: 1; font-size: 15px; line-height: 1.15; text-align: left; padding: 28px 8px 10px; background: linear-gradient(transparent, #2b0b11c9); }
   .mobile-album-tile .reel-photo-caption > small { font-size: 9px; }
   .montage-stage .reel-controls { position: relative; inset: auto; width: 100%; margin: 0; justify-content: flex-start; }
   .montage-stage .reel-contact-toggle { font-size: 12px; padding: 10px 0; }
@@ -49,13 +49,13 @@
 
   .wave-stage { height: auto; min-height: 0; justify-content: flex-start; padding: 80px 5% 100px; gap: 24px; }
   .wave-kicker { position: static; font-size: 10px; line-height: 1.7; text-align: center; }
-  .wave-type { padding: 0; font-size: 13vw; }
+  .wave-type { padding: 0; font-size: clamp(32px, 10.5vw, 44px); }
   .wave-underline { margin: 0; }
   .wave-caption { font-size: 10px; line-height: 1.8; margin: 0; max-width: 90%; }
 
   .dates-film { scroll-margin-top: 66px; }
   .dates-stage { height: auto; min-height: 0; perspective: none; overflow: visible; padding: 0; }
-  .mobile-date-nav { position: sticky; top: 66px; z-index: 30; display: flex; gap: 8px; padding: 4px 6%; background: #31131f; color: var(--paper); border-bottom: 1px solid #f4eee526; }
+  .mobile-date-nav { position: sticky; top: 66px; z-index: 30; display: flex; gap: 8px; padding: 4px 6%; background: var(--wine); color: var(--paper); border-bottom: 1px solid #f4eee526; }
   .mobile-date-nav button { flex: 1; min-width: 0; min-height: 44px; padding: 10px 0; background: transparent; border-bottom: 2px solid transparent; font-size: 11px; line-height: 1.5; color: inherit; }
   .mobile-date-nav button[aria-current] { color: #e2b998; border-bottom-color: currentColor; }
   .dates-stage .date-panel { position: relative; inset: auto; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 20px; min-height: 100svh; height: auto; padding: 0 7% 94px; scroll-margin-top: 119px; box-shadow: none; transform: none; pointer-events: auto; }

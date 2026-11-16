@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { motion, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { animate, motion, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import { prefersReduced } from '../lib/motion';
 
@@ -47,10 +47,11 @@ export function PresentationProvider({ ready, children }) {
   return <PresentationContext.Provider value={{ compact, reduced, mode, ready }}>{children}</PresentationContext.Provider>;
 }
 
-// Both touch and wheel use document scroll. Compact scenes scrub while entering
-// the viewport, preserving their short layouts instead of adding pinned space.
-export function useSceneProgress(ref, { offset, mobileOffset = ['start 0.9', 'start 0.15'] } = {}) {
-  const { compact, reduced, mode, ready } = usePresentation();
+// The scroll clock stays separate from entry animation, including scenes which
+// keep a traveling photo while their copy reveals itself independently.
+export function useSceneProgress(ref, { offset, mobileOffset = ['start 0.9', 'start 0.15'], desktopMode = 'scroll', mobileMode = 'scroll' } = {}) {
+  const { compact, reduced, ready } = usePresentation();
+  const mode = reduced ? 'static' : compact ? mobileMode : desktopMode;
   const { scrollYProgress: rawProgress } = useScroll({
     target: ref,
     offset: offset || (compact ? mobileOffset : ['start start', 'end end']),
@@ -60,9 +61,62 @@ export function useSceneProgress(ref, { offset, mobileOffset = ['start 0.9', 'st
   useEffect(() => {
     if (!ref.current) return;
     ref.current.dataset.sceneMode = mode;
-    delete ref.current.dataset.enterState;
   }, [mode, ref]);
-  return { progress, rawProgress };
+  return { progress, rawProgress, mode };
+}
+
+// One timed entrance per mounted group. Observe the actual artwork/text, rather
+// than an entire long section; scrolling past a group finishes it immediately.
+export function useEnterProgress(ref, { duration = .8, delay = 0, immediate = false } = {}) {
+  const { reduced, ready } = usePresentation();
+  const progress = useMotionValue(reduced || immediate ? 1 : 0);
+  const state = useRef('pending');
+  const animation = useRef(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (reduced || immediate || state.current !== 'pending') {
+      animation.current?.stop(); progress.set(1);
+      state.current = el.dataset.enterState = 'complete';
+      return;
+    }
+    el.dataset.enterState = 'pending';
+    if (!ready) return;
+    let observer, frame = 0, disposed = false;
+    const stopWatching = () => {
+      observer?.disconnect(); cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      el.removeEventListener('focusin', finish);
+      el.removeEventListener('pointerdown', finish);
+    };
+    const finish = () => {
+      animation.current?.stop(); animation.current = null;
+      progress.set(1); state.current = el.dataset.enterState = 'complete';
+      stopWatching();
+    };
+    const check = () => {
+      frame = 0;
+      if (disposed || state.current === 'complete') return;
+      const rect = el.getBoundingClientRect(), height = window.innerHeight;
+      if (rect.bottom <= 0 || (state.current === 'running' && rect.top >= height)) { finish(); return; }
+      if (state.current === 'pending' && rect.top < height * .8) {
+        state.current = el.dataset.enterState = 'running';
+        animation.current = animate(progress, 1, { duration, delay, ease: [.45, 0, .55, 1], onComplete: finish });
+      }
+    };
+    function schedule() { if (!frame) frame = requestAnimationFrame(check); }
+    observer = new IntersectionObserver(schedule, { rootMargin: '0px 0px -20% 0px' });
+    observer.observe(el);
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    el.addEventListener('focusin', finish);
+    el.addEventListener('pointerdown', finish, { passive: true });
+    schedule();
+    document.fonts.ready.then(() => { if (!disposed && state.current !== 'complete') schedule(); });
+    return () => { disposed = true; stopWatching(); animation.current?.stop(); animation.current = null; };
+  }, [ref, progress, duration, delay, immediate, reduced, ready]);
+  return progress;
 }
 
 // A short, overdamped follow-through smooths wheel/touch steps without bounce.
@@ -81,7 +135,7 @@ export function useSoftScroll(source, jumpDistance = .35, restDelta = .0001) {
 export function useScene(options) {
   const ref = useRef(null);
   const presentation = usePresentation();
-  return { ref, ...useSceneProgress(ref, options), ...presentation };
+  return { ref, ...presentation, ...useSceneProgress(ref, options) };
 }
 
 export function seekScene(ref, fraction) {
@@ -90,12 +144,12 @@ export function seekScene(ref, fraction) {
   window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + Math.max(0, el.offsetHeight - innerHeight) * Math.max(0, Math.min(1, fraction)), behavior: prefersReduced() ? 'instant' : 'smooth' });
 }
 
-export function SceneHUD({ number, label, progress, children, style }) {
+export function SceneHUD({ number, label, progress, children, style, showProgress = true }) {
   const { compact } = usePresentation();
   const next = event => {
     const current = event.currentTarget.closest('.film-scene');
     const scenes = [...document.querySelectorAll('.film-scene, #wishes, #closing')];
     scenes[scenes.indexOf(current) + 1]?.scrollIntoView({ behavior: prefersReduced() ? 'instant' : 'smooth', block: 'start' });
   };
-  return <motion.div className="scene-hud" style={style}><div><span>{number}</span><span className="hud-rule" /><span>{label}</span></div>{children || (compact ? <button className="hud-scroll" onClick={next}>TIẾP TỤC <ArrowDown size={13} /></button> : <span className="hud-scroll">TIẾP TỤC CÂU CHUYỆN <ArrowDown size={13} /></span>)}{!compact && <div className="scene-progress"><motion.i style={{ scaleX: progress }} /></div>}</motion.div>;
+  return <motion.div className="scene-hud" style={style}><div><span>{number}</span><span className="hud-rule" /><span>{label}</span></div>{children || <button type="button" className="hud-scroll" onClick={next}>{compact ? 'TIẾP TỤC' : 'TIẾP TỤC CÂU CHUYỆN'} <ArrowDown size={13} /></button>}{!compact && showProgress && <div className="scene-progress"><motion.i style={{ scaleX: progress }} /></div>}</motion.div>;
 }

@@ -1,18 +1,19 @@
 /* Developer and designer: opposite entrances, layered portraits and soft arches. */
-.family-film { height: 205svh; background: #f0e7dc; }
+.family-film { height: auto; background: var(--profile-paper); }
 .family-filter-defs { position: absolute; pointer-events: none; overflow: hidden; }
 .family-stage {
+  position: relative;
   color: var(--wine);
-  background: radial-gradient(ellipse at 25% 70%, #d8d5c440, transparent 45%),
-    radial-gradient(ellipse at 78% 60%, #d9b8ac30, transparent 46%), #f4eee5;
+  background: radial-gradient(ellipse at 25% 70%, #dfc4bd40, transparent 45%),
+    radial-gradient(ellipse at 78% 60%, #d9b8ac30, transparent 46%), var(--profile-paper);
 }
-.family-stage::before { content: ''; position: absolute; top: 110px; bottom: 90px; left: 50%; width: 1px; background: linear-gradient(to bottom, #6f203118 calc(54% - 22px), transparent calc(54% - 22px), transparent calc(54% + 18px), #6f203118 calc(54% + 18px)); }
+.family-stage::before { content: ''; position: absolute; top: 110px; bottom: 90px; left: 50%; width: 1px; background: linear-gradient(to bottom, #68132018 calc(54% - 22px), transparent calc(54% - 22px), transparent calc(54% + 18px), #68132018 calc(54% + 18px)); }
 .family-spread { position: absolute; inset: 118px 8% 88px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10%; }
 .family-person { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 168px minmax(0, 1fr); }
 .family-name { position: relative; z-index: 4; padding-top: 6px; text-align: center; }
-.family-role { font: 400 var(--type-label)/1.5 var(--sans); color: #7e6b60; letter-spacing: .08em; }
+.family-role { display: block; font: 400 var(--type-label)/1.5 var(--sans); color: #7e6b60; letter-spacing: .08em; }
 .family-career {
-  --brush-color: #6f2031;
+  --brush-color: var(--wine);
   --brush-tilt: -1.5deg;
   --brush-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 64' preserveAspectRatio='none'%3E%3Cpath fill='white' fill-rule='evenodd' d='M8 18L26 13 18 11Q68 5 112 9T204 10L231 14 221 18 237 22 228 29 234 33 224 39 230 43 207 46 216 50Q167 57 124 53T30 54L11 50 22 46 4 42 13 35 6 31 15 25ZM28 18L69 15 66 16 30 20ZM177 16L219 19 216 20 179 18ZM19 42L54 44 50 45 21 44ZM157 49L206 46 202 48 160 51Z'/%3E%3Cpath fill='white' opacity='.55' d='M3 24L29 19 27 21 4 27ZM213 39L239 35 235 38 215 41ZM32 56L82 55 78 57 35 58Z'/%3E%3C/svg%3E");
   position: relative; isolation: isolate; display: flex; justify-content: center; align-items: center; gap: 9px;
@@ -22,13 +23,16 @@
 .family-career::before {
   content: ''; position: absolute; z-index: -1; inset: -3px -12px; pointer-events: none;
   background: repeating-linear-gradient(177deg, transparent 0 8px, #f4eee526 8px 8.6px, transparent 8.6px 13px), var(--brush-color);
-  mask-image: var(--brush-mask); mask-size: 100% 100%; mask-repeat: no-repeat; transform: rotate(var(--brush-tilt));
+  mask-image: var(--brush-mask); mask-size: 100% 100%; mask-repeat: no-repeat;
+  transform: rotate(var(--brush-tilt)) scaleX(var(--brush-scale, 1)); transform-origin: left center;
 }
-.family-bride .family-career { --brush-color: #935b4a; --brush-tilt: 1.5deg; }
+.family-bride .family-career { --brush-color: #852936; --brush-tilt: 1.5deg; }
+.family-bride .family-career::before { transform-origin: right center; }
+.family-career-label { display: inline-flex; align-items: center; gap: 9px; }
 .family-career svg { flex-shrink: 0; }
 .family-name h3 { margin: 12px 0 0; font: 500 clamp(26px, 3vw, 44px)/1.2 var(--serif); letter-spacing: -.025em; white-space: nowrap; }
 .family-portrait { position: relative; grid-row: 2; min-height: 0; isolation: isolate; margin: 0 -5%; }
-.family-portrait-halo { position: absolute; z-index: -2; inset: 13% 14% 2%; border-radius: 48% 48% 2px 2px; background: linear-gradient(145deg, #c8cab6, #e2dfcf 68%, #ede7d9); box-shadow: inset 1px 1px 0 #fff8; }
+.family-portrait-halo { position: absolute; z-index: -2; inset: 13% 14% 2%; border-radius: 48% 48% 2px 2px; background: linear-gradient(145deg, #d9b9b2, #ead8cf 68%, #f1e7db); box-shadow: inset 1px 1px 0 #fff8; }
 .family-bride .family-portrait-halo { background: linear-gradient(145deg, #d9bca9, #e9d8c7 65%, #efe5d7); }
 .family-portrait-shadow { position: absolute; left: 14%; right: 14%; bottom: 1%; height: 7%; border-radius: 50%; background: #3a302526; filter: blur(10px); }
 .family-subject-frame { position: absolute; inset: 0; z-index: 1; overflow: hidden; transform-origin: 50% 85%; will-change: transform; mask-image: linear-gradient(#000 0%, #000 88%, transparent 100%); }
@@ -39,7 +43,6 @@
 .family-bride .has-masked-original .family-subject { height: 320%; top: -66%; translate: -38% 0; }
 .family-orbit { position: absolute; z-index: 2; left: 2%; right: 2%; bottom: 15%; height: 17%; border: 1px solid #8e70523d; border-top-color: transparent; border-radius: 50%; pointer-events: none; }
 .family-orbit i { position: absolute; right: 5%; bottom: 13%; width: 5px; height: 5px; border-radius: 50%; background: #a07a56; box-shadow: 0 0 0 4px #f4eee580; }
-.family-portrait-caption { position: absolute; z-index: 3; bottom: -3px; left: 0; right: 0; text-align: center; font: italic 400 21px/1.4 var(--serif); color: #816854; }
 .family-heart { position: absolute; z-index: 3; left: 50%; top: 54%; translate: -50% -50%; display: grid; place-items: center; width: 32px; height: 32px; font-size: 26px; line-height: 1; background: transparent; padding: 0; color: var(--wine); pointer-events: none; }
 .family-heart .love-mark > svg { stroke: none; }
 .family-person .has-original .family-subject-frame { inset: 3% 14% 6%; border-radius: 45% 45% 2px 2px; }
@@ -53,9 +56,8 @@
   .family-name h3 { font-size: clamp(22px, 3vw, 30px); }
 }
 @media (max-width: 700px) {
-  .family-film { height: 240svh; }
   .family-spread { position: relative; inset: auto; padding: 0; gap: 6%; align-content: start; }
-  .family-stage::before { top: 100px; bottom: 90px; background: linear-gradient(to bottom, #6f203118 calc(55% - 10.5px), transparent calc(55% - 10.5px), transparent calc(55% + 19.5px), #6f203118 calc(55% + 19.5px)); }
+  .family-stage::before { top: 100px; bottom: 90px; background: linear-gradient(to bottom, #68132018 calc(55% - 10.5px), transparent calc(55% - 10.5px), transparent calc(55% + 19.5px), #68132018 calc(55% + 19.5px)); }
   .family-person { grid-template-rows: 112px auto; row-gap: 18px; }
   .family-name { position: relative; padding-top: 0; }
   .family-role { font-size: 10px; line-height: 1.5; letter-spacing: .03em; }
@@ -63,6 +65,7 @@
   .family-career { margin-top: 8px; padding: 4px 12px; gap: 5px; font-size: 11px; }
   .family-career::before { inset: -2px -7px; }
   .family-career svg { width: 13px; height: 13px; }
+  .family-career-label { gap: 5px; }
   .family-portrait { height: clamp(240px, 36svh, 330px); margin: 0; }
   .family-portrait-halo { inset: 12% 1% 3%; }
   .family-subject { filter: drop-shadow(6px 8px 8px #44322424); }
@@ -71,7 +74,6 @@
   .family-bride .has-cutout .family-subject { height: 230%; top: -16%; }
   .family-bride .has-masked-original .family-subject { height: 300%; top: -61%; }
   .family-orbit { left: -8%; right: -8%; bottom: 16%; height: 15%; }
-  .family-portrait-caption { display: none; }
   .family-heart { top: 55%; width: 24px; height: 24px; font-size: 18px; }
 }
 @media (max-height: 720px) and (min-width: 701px) {
@@ -79,7 +81,6 @@
   .family-person { grid-template-rows: 138px minmax(0, 1fr); }
   .family-name { padding-top: 0; }
   .family-name h3 { font-size: 32px; margin-top: 9px; }
-  .family-portrait-caption { font-size: 18px; }
 }
 @media (max-height: 500px) and (min-width: 701px) and (prefers-reduced-motion: no-preference) {
   .family-spread { top: 94px; bottom: 70px; }
@@ -88,7 +89,6 @@
   .family-name h3 { font-size: 24px; margin-top: 4px; }
   .family-career { font-size: 11px; margin-top: 7px; padding: 4px 12px; gap: 5px; }
   .family-career svg { width: 13px; height: 13px; }
-  .family-portrait-caption { display: none; }
 }
 @media (max-height: 360px) and (min-width: 701px) and (prefers-reduced-motion: no-preference) {
   .family-spread { top: 88px; bottom: 65px; }

@@ -52,7 +52,7 @@ with sync_playwright() as p:
             if width<900:
                 page.get_by_role('button',name='Xác nhận tham dự',exact=False).click();page.wait_for_timeout(500)
             page.screenshot(path=str(out/f'{width}-rsvp.png'))
-            assert page.get_by_label('TÊN CỦA BẠN',exact=True).evaluate('(el)=>parseFloat(getComputedStyle(el).fontSize)')>=16
+            assert page.locator('#rsvp-name').evaluate('(el)=>parseFloat(getComputedStyle(el).fontSize)')>=16
             page.keyboard.press('Escape')
         page.close()
     assert not errors,errors

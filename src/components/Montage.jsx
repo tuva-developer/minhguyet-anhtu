@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useMotionValueEvent, useTransform } from 'framer-motion';
 import { ArrowDown, ArrowUpRight, Grid2X2, Plus, X } from 'lucide-react';
 import { CinemaPhoto, Photo, useMedia } from './Media';
-import { useScene, SceneHUD, seekScene } from './Scene';
+import { useScene, useEnterProgress, SceneHUD, seekScene } from './Scene';
 import Reveal from './Reveal';
 import { useStoryFlow } from './StoryFlow';
 import { goTo } from '../lib/motion';
+import { story } from '../data/story';
 
 const clamp = x => Math.max(0, Math.min(1, x));
 const ease = x => { const p = clamp(x); return p * p * p * (p * (p * 6 - 15) + 10); };
@@ -52,34 +53,36 @@ function Tile({ photo, index, count, progress, compact, reduced, phase, viewport
   return <motion.div className={`reel-frame montage-tile ${index === activeIndex ? 'is-current' : ''}`} data-photo-id={photo.id} style={reduced ? undefined : { x, y, width, height, rotate, opacity, zIndex: index === activeIndex ? 5 : 4 }} inert={!accessible ? '' : undefined}>
     <button className="reel-photo-button" onClick={() => onPhoto(photo.id, 'reel')} aria-label={`Xem ảnh: ${photo.caption || photo.alt}`} tabIndex={accessible ? 0 : -1}>
       <motion.div className="reel-surface" layoutId={`reel-${photo.id}`}>{!reduced && (index === 0 || index === exitIndex) ? <><CinemaPhoto photo={photo} priority />{index === 0 && <motion.div className="travel-photo-shade" style={{ opacity: dockShade }} />}</> : <Photo photo={photo} priority={index < 3} sizes="(max-width: 700px) 100vmax, 60vw" style={{ objectPosition: photo.position || '50% 20%' }} />}</motion.div>
-      <motion.span className="reel-photo-caption" style={{ opacity: reduced ? 1 : caption }}><small>{String(index + 1).padStart(2, '0')}</small>{photo.caption || 'Có nhau.'}<ArrowUpRight size={15} /></motion.span>
+      <motion.span className="reel-photo-caption" style={{ opacity: reduced ? 1 : caption }}><small>{String(index + 1).padStart(2, '0')}</small>{photo.caption || story.album.fallbackCaption}<ArrowUpRight size={15} /></motion.span>
     </button>
   </motion.div>;
 }
 
 function ContactSheet({ photos, onPhoto }) {
   const [limit, setLimit] = useState(12);
-  return <div className="reel-contact-sheet"><div className="contact-sheet-heading"><span>TOÀN BỘ NHỮNG KHOẢNH KHẮC</span><span>{photos.length} ẢNH / CHẠM ĐỂ XEM</span></div><div className={`album-grid ${photos.length === 1 ? 'single-photo' : ''}`}>{photos.slice(0, limit).map((photo, index) => <Reveal key={photo.id} className={`album-card ${index % 3 === 1 ? 'offset-card' : ''}`}><button className="album-photo-button" onClick={() => onPhoto(photo.id, 'gallery')} aria-label={`Xem ảnh: ${photo.caption || photo.alt}`}><motion.div className="photo-surface" layoutId={`gallery-${photo.id}`}><Photo photo={photo} /><span className="photo-open"><ArrowUpRight size={20} /></span></motion.div><span className="album-caption"><small>{String(index + 1).padStart(2, '0')}</small><span>{photo.caption || photo.alt}</span><ArrowUpRight size={13} /></span></button></Reveal>)}</div>{limit < photos.length && <div className="load-more"><button className="button button-outline" onClick={() => setLimit(value => value + 12)}>Xem thêm những trang ảnh <Plus size={16} /></button></div>}</div>;
+  return <div className="reel-contact-sheet"><div className="contact-sheet-heading"><span>{story.album.contact}</span><span>{photos.length} ẢNH / CHẠM ĐỂ XEM</span></div><div className={`album-grid ${photos.length === 1 ? 'single-photo' : ''}`}>{photos.slice(0, limit).map((photo, index) => <Reveal key={photo.id} className={`album-card ${index % 3 === 1 ? 'offset-card' : ''}`}><button className="album-photo-button" onClick={() => onPhoto(photo.id, 'gallery')} aria-label={`Xem ảnh: ${photo.caption || photo.alt}`}><motion.div className="photo-surface" layoutId={`gallery-${photo.id}`}><Photo photo={photo} /><span className="photo-open"><ArrowUpRight size={20} /></span></motion.div><span className="album-caption"><small>{String(index + 1).padStart(2, '0')}</small><span>{photo.caption || photo.alt}</span><ArrowUpRight size={13} /></span></button></Reveal>)}</div>{limit < photos.length && <div className="load-more"><button className="button button-outline" onClick={() => setLimit(value => value + 12)}>Xem thêm những trang ảnh <Plus size={16} /></button></div>}</div>;
 }
 
 function MobileTile({ photo, index, count, progress, onPhoto, reduced }) {
   const arrive = useTransform(progress, p => ease((p - index * .06) / .82));
   const x = useTransform(arrive, [0, 1], [`${count === 1 ? 0 : index % 2 ? -45 : 45}%`, '0%']);
   const y = useTransform(arrive, [0, 1], [`${count <= 2 ? 0 : index < 2 ? 30 : -30}%`, '0%']);
-  const rotate = useTransform(arrive, [0, 1], [-8 + index * 5, 0]);
+  const rotate = useTransform(arrive, [0, 1], [count === 1 ? 0 : -8 + index * 5, 0]);
   const scale = useTransform(arrive, [0, 1], [.9, 1]);
   return <motion.div className="reel-frame montage-tile mobile-album-tile" data-photo-id={photo.id}
     style={reduced ? undefined : { x, y, rotate, scale, zIndex: count - index }}>
     <button className="reel-photo-button" onClick={() => onPhoto(photo.id, 'reel')} aria-label={`Xem ảnh: ${photo.caption || photo.alt}`}>
       <motion.div className="reel-surface" layoutId={`reel-${photo.id}`}><Photo photo={photo} sizes="44vw" priority={index < 2} style={{ objectPosition: photo.position || '50% 25%' }} /></motion.div>
-      <span className="reel-photo-caption"><small>{String(index + 1).padStart(2, '0')}</small>{photo.caption || 'Có nhau.'}</span>
+      <span className="reel-photo-caption"><small>{String(index + 1).padStart(2, '0')}</small>{photo.caption || story.album.fallbackCaption}</span>
     </button>
   </motion.div>;
 }
 
 function Montage({ photos, onPhoto }) {
   const { site, albumLead } = useMedia();
-  const { ref, progress: sceneProgress, compact, reduced } = useScene();
+  const { ref, progress: sceneProgress, compact, reduced } = useScene({ mobileMode: 'enter' });
+  const gridRef = useRef(null);
+  const gridEntry = useEnterProgress(gridRef, { duration: 1.1 });
   const flow = useStoryFlow();
   const standaloneOwnership = useMotionValue(1);
   // Use the camera's clock so both sides of the handoff update in one frame.
@@ -116,13 +119,13 @@ function Montage({ photos, onPhoto }) {
   }
   return <section className={`reel-section ${expanded ? 'contact-open' : ''}`} id="story"><div ref={ref} className="film-scene reel-film montage-film">
     <div className="film-stage reel-stage montage-stage" data-phase={compact ? 'grid' : phase} data-primary-photo={preview[activeIndex].id}>
-      <motion.div className="reel-heading" style={{ opacity: reduced || compact ? 1 : titleOpacity }}><span className="cinema-kicker">GOM TỪNG KHOẢNH KHẮC, THÀNH MỘT ĐỜI.</span><p>Những ngày <em>có nhau.</em></p><span className="reel-counter">{String(photos.length).padStart(2, '0')}<small>KHOẢNH KHẮC</small></span></motion.div>
-      <div className={`reel-space montage-space ${compact ? 'mobile-album-grid' : ''} ${preview.length === 1 ? 'single-photo' : ''}`} style={compact ? { gridTemplateRows: `repeat(${Math.ceil(preview.length / 2)}, minmax(0, 1fr))` } : undefined}>{preview.map((photo, index) => compact
-        ? <MobileTile key={photo.id} photo={photo} index={index} count={preview.length} progress={progress} onPhoto={onPhoto} reduced={reduced} />
+      <motion.div className="reel-heading" style={{ opacity: reduced || compact ? 1 : titleOpacity }}><span className="cinema-kicker">{story.album.kicker}</span><p>{story.album.title[0]} <em>{story.album.title[1]}</em></p><span className="reel-counter">{String(photos.length).padStart(2, '0')}<small>KHOẢNH KHẮC</small></span></motion.div>
+      <div ref={gridRef} className={`reel-space montage-space ${compact ? 'mobile-album-grid' : ''} ${preview.length === 1 ? 'single-photo' : ''}`} style={compact ? { gridTemplateRows: `repeat(${Math.ceil(preview.length / 2)}, minmax(0, 1fr))` } : undefined}>{preview.map((photo, index) => compact
+        ? <MobileTile key={photo.id} photo={photo} index={index} count={preview.length} progress={gridEntry} onPhoto={onPhoto} reduced={reduced} />
         : <Tile key={photo.id} photo={photo} index={index} count={preview.length} progress={progress} compact={compact} reduced={reduced} phase={phase} viewport={dimensions} onPhoto={onPhoto} photoOwnership={flow?.albumPhotoOpacity || standaloneOwnership} leadSrc={flow?.leadSrc} exitIndex={exitIndex} activeIndex={activeIndex} />)}</div>
-      {!reduced && !compact && <motion.p className="montage-ending" style={{ opacity: endingOpacity }}>Một đời,<br /><em>có nhau.</em></motion.p>}
+      {!reduced && !compact && <motion.p className="montage-ending" style={{ opacity: endingOpacity }}>{story.album.ending[0]}<br /><em>{story.album.ending[1]}</em></motion.p>}
       <div className="reel-controls"><button className="reel-contact-toggle" aria-expanded={expanded} onClick={toggle}><Grid2X2 size={14} />{expanded ? 'Đóng toàn bộ album' : 'Xem toàn bộ album'}<ArrowDown size={14} /></button>{!reduced && !compact && <button className="montage-view-grid" onClick={() => seekScene(ref, .53)}>DỪNG LẠI MỘT CHÚT <span>↗</span></button>}</div>
-      <SceneHUD number="03" label="NHỮNG NGÀY CÓ NHAU" progress={progress}>{compact ? <button className="hud-scroll" onClick={() => goTo('couple')}>HAI CHÚNG MÌNH <ArrowDown size={14} /></button> : undefined}</SceneHUD>
+      <SceneHUD number={story.chapters.story} label={story.album.chapter} progress={progress} />
     </div>
     </div>{expanded && <div id="contact-sheet"><ContactSheet photos={photos} onPhoto={onPhoto} /><button className="contact-close" onClick={() => { setExpanded(false); if (compact) goTo('story'); else seekScene(ref, .53); }}>Gấp album lại <X size={16} /></button></div>}
   </section>;

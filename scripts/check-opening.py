@@ -21,26 +21,27 @@ with sync_playwright() as p:
         assert page.locator('.wedding-content').get_attribute('inert') is not None
         assert page.evaluate('document.body.style.overflow') == 'hidden'
         assert page.evaluate('document.querySelector("audio").paused')
+        assert page.locator('.opening-intro .thread-cat, .intro-thread foreignObject').count() == 0
         samples=page.evaluate('''async()=>{
             const result=[];
             const svg=document.querySelector('.intro-thread');
             const path=svg.querySelector('path');
-            const cat=svg.querySelector('.intro-thread-cat');
+            const tip=svg.querySelector('circle');
             const started=performance.now();
             while(result.length<5 && performance.now()-started<2500){
                 await new Promise(requestAnimationFrame);
                 const ratio=parseFloat(getComputedStyle(path).strokeDasharray);
-                if(ratio<.1 || ratio>.9 || !cat.querySelector('img').complete)continue;
+                if(ratio<.1 || ratio>.9)continue;
                 const p=path.getPointAtLength(path.getTotalLength()*ratio);
                 const screen=new DOMPoint(p.x,p.y).matrixTransform(path.getScreenCTM());
-                const r=cat.getBoundingClientRect();
+                const r=tip.getBoundingClientRect();
                 result.push({ratio,gap:Math.hypot(r.x+r.width/2-screen.x,r.y+r.height/2-screen.y),
-                    x:r.x,y:r.y,opacity:+getComputedStyle(cat).opacity,pointer:getComputedStyle(cat).pointerEvents});
+                    x:r.x,y:r.y,opacity:+getComputedStyle(tip).opacity});
             }
             return result;
         }''')
         assert len(samples)==5,(width,samples)
-        assert all(sample['gap']<3 and sample['opacity']==1 and sample['pointer']=='none' for sample in samples),(width,samples)
+        assert all(sample['gap']<3 and sample['opacity']==1 for sample in samples),(width,samples)
         assert any(abs(sample['x']-samples[0]['x'])+abs(sample['y']-samples[0]['y'])>.5 for sample in samples[1:]),samples
         assert page.locator('.opening-intro').get_attribute('data-phase') == 'drawing'
         assert page.locator('.name-enter').evaluate_all('(els)=>els.length===2 && els.every(el=>+getComputedStyle(el).opacity===0)')

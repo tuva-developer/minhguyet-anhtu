@@ -2,14 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValueEvent, useTransform } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { Photo, useMedia } from './Media';
-import { useSceneProgress, usePresentation, useScene, SceneHUD, seekScene } from './Scene';
+import { useEnterProgress, usePresentation, useScene, SceneHUD, seekScene } from './Scene';
 import { goTo } from '../lib/motion';
+import { story } from '../data/story';
 
 function DatePanel({ event, index, count, progress, reduced, active, onRSVP }) {
   const { eventPhotos, site } = useMedia();
   const { compact } = usePresentation();
   const ref = useRef(null);
-  const { progress: paperProgress } = useSceneProgress(ref);
+  const paperProgress = useEnterProgress(ref, { duration: .8 });
   const photo = eventPhotos[event.id];
   const start = index / count;
   const fold = useTransform(progress, value => {
@@ -22,25 +23,24 @@ function DatePanel({ event, index, count, progress, reduced, active, onRSVP }) {
   const opacity = useTransform(fold, value => value.opacity);
   const scale = useTransform(fold, value => value.scale);
   const shade = useTransform(fold, value => value.shade);
-  const numberY = useTransform(progress, [start, Math.min(1, start + 1 / count)], [40, -55]);
   const imageScale = useTransform(progress, [start, Math.min(1, start + 1 / count)], [1.06, 1]);
   const paperScale = useTransform(paperProgress, [0, 1], [1.07, 1]);
   const paperRotate = useTransform(paperProgress, [0, 1], [-8, 0]);
   const [day, month, year] = event.date.split('.');
-  return <motion.article ref={ref} id={`event-${event.id}`} data-event-id={event.id} data-photo-id={photo?.id} className={`date-panel date-theme-${index % 3} ${active || compact ? 'is-active' : ''}`} style={reduced || compact ? undefined : { rotateY, opacity, scale, zIndex: count - index }} aria-hidden={!compact && !reduced && !active} inert={!compact && !reduced && !active ? '' : undefined}>
-    {photo && <motion.div className="date-backdrop" style={reduced ? undefined : compact ? { scale: paperScale, rotateY: paperRotate } : { scale: imageScale }} aria-hidden="true"><Photo photo={photo} sizes="100vmax" alt="" /></motion.div>}<div className="date-backdrop-shade" />
-    <span className="date-scene-number">0{index + 1} / SAVE THE DATE</span>
-    <div className="date-main-copy"><span className="cinema-kicker">TRÂN TRỌNG KÍNH MỜI BẠN</span><h2>{event.name}</h2><p className="date-venue">{event.title}</p><p className="date-primary-time"><span>{event.receptionTime ? 'HÔN LỄ CỬ HÀNH LÚC' : 'TIỆC BẮT ĐẦU LÚC'}</span><strong>{event.time}</strong>{event.receptionTime && <small>Đãi tiệc lúc {event.receptionTime}</small>}</p><div className="date-actions"><button onClick={onRSVP} className="date-rsvp-link">Mình có hẹn nhé <ArrowUpRight size={15} /></button></div></div>
-    <motion.div className="date-giant" style={{ y: reduced || compact ? 0 : numberY }}><time dateTime={event.dateTime}><span>{day}<i>/</i></span><span>{month}<small>{year}</small></span></time><p>{event.weekday.toUpperCase()}</p></motion.div>
-    <p className="date-bottom-line">MỘT CUỘC HẸN, ĐỂ GIỮ NHAU CẢ ĐỜI.</p>
+  return <motion.article id={`event-${event.id}`} data-scene-mode={reduced ? 'static' : compact ? 'enter' : 'scroll'} data-event-id={event.id} data-photo-id={photo?.id} className={`date-panel date-theme-${index % 3} ${active || compact ? 'is-active' : ''}`} style={reduced || compact ? undefined : { rotateY, opacity, scale, zIndex: count - index }} aria-hidden={!compact && !reduced && !active} inert={!compact && !reduced && !active ? '' : undefined}>
+    {photo && <motion.div ref={ref} className="date-backdrop" style={reduced ? undefined : compact ? { scale: paperScale, rotateY: paperRotate } : { scale: imageScale }} aria-hidden="true"><Photo photo={photo} sizes="100vmax" alt="" /></motion.div>}<div className="date-backdrop-shade" />
+    <span className="date-scene-number">0{index + 1} / {story.schedule.stamp}</span>
+    <div className="date-main-copy"><span className="cinema-kicker">{story.schedule.invitation}</span><h2>{event.name}</h2><p className="date-venue">{event.title}</p><p className="date-primary-time"><span>{event.receptionTime ? 'HÔN LỄ CỬ HÀNH LÚC' : 'TIỆC BẮT ĐẦU LÚC'}</span><strong>{event.time}</strong>{event.receptionTime && <small>Đãi tiệc lúc {event.receptionTime}</small>}</p><div className="date-actions"><button onClick={onRSVP} className="date-rsvp-link">{story.actions.rsvp} <ArrowUpRight size={15} /></button></div></div>
+    <div className="date-giant"><time dateTime={event.dateTime}><span>{day}<i>/</i></span><span>{month}<small>{year}</small></span></time><p>{event.weekday.toUpperCase()}</p></div>
+    <p className="date-bottom-line">{story.schedule.caption}</p>
     {!reduced && !compact && <motion.div className="paper-fold-shade" style={{ opacity: shade }} aria-hidden="true" />}<span className="paper-fold-spine" aria-hidden="true" />
-    {compact && <SceneHUD number={String(index + 1).padStart(2, '0')} label={event.name.toUpperCase()} progress={paperProgress}><button className="hud-scroll" onClick={() => goTo(index < count - 1 ? `event-${site.events[index + 1].id}` : 'wishes')}>{index < count - 1 ? 'LỄ TIẾP THEO' : 'GỬI LỜI THƯƠNG'} <ArrowUpRight size={14} /></button></SceneHUD>}
+    {compact && <SceneHUD number={story.chapters.event} label={event.name.toUpperCase()} progress={paperProgress}><button className="hud-scroll" onClick={() => goTo(index < count - 1 ? `event-${site.events[index + 1].id}` : 'wishes')}>{index < count - 1 ? story.schedule.next : story.schedule.wishes} <ArrowUpRight size={14} /></button></SceneHUD>}
   </motion.article>;
 }
 
 export default function Schedule({ onRSVP }) {
   const { site } = useMedia();
-  const { ref, progress, reduced, compact } = useScene();
+  const { ref, progress, reduced, compact } = useScene({ mobileMode: 'enter' });
   const [active, setActive] = useState(0);
   const count = site.events.length;
   useMotionValueEvent(progress, 'change', value => { if (!compact) setActive(Math.min(count - 1, Math.floor(value * count))); });
@@ -65,6 +65,6 @@ export default function Schedule({ onRSVP }) {
   return <section id="event" className="film-scene dates-film" ref={ref} style={{ height: reduced || compact ? 'auto' : `${count * 88 + 100}svh` }} aria-label="Ba cuộc hẹn ngày cưới"><div className="film-stage dates-stage" data-active={active}>
     {compact && <nav className="mobile-date-nav date-tabs" aria-label="Chọn lịch cưới">{site.events.map((event, index) => <button key={event.id} aria-current={active === index ? 'location' : undefined} aria-controls={`event-${event.id}`} onClick={() => goTo(`event-${event.id}`)}>{event.name}</button>)}</nav>}
     {site.events.map((event, index) => <DatePanel key={event.id} event={event} index={index} count={count} progress={progress} reduced={reduced} active={active === index} onRSVP={onRSVP} />)}
-    {!compact && <SceneHUD number="06" label="HẸN GẶP TRONG NGÀY VUI" progress={progress}><div className="scene-tabs date-tabs">{site.events.map((event, index) => <button key={event.id} aria-pressed={active === index} onClick={() => seekScene(ref, (index + .5) / count)}>{event.name}</button>)}</div></SceneHUD>}
+    {!compact && <SceneHUD number={story.chapters.event} label={story.schedule.chapter} progress={progress}><div className="scene-tabs date-tabs">{site.events.map((event, index) => <button key={event.id} aria-pressed={active === index} onClick={() => seekScene(ref, (index + .5) / count)}>{event.name}</button>)}</div></SceneHUD>}
     </div></section>;
 }

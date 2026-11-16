@@ -1,4 +1,4 @@
-"""Fullscreen scroll + interaction acceptance checks (Python / Playwright)."""
+"""Fullscreen scroll, timed entrances and interaction acceptance checks."""
 import argparse
 import copy
 import json
@@ -43,15 +43,19 @@ with sync_playwright() as p:
         for selector in ['.hero-film','.reading-film','.profiles-film','.reel-film','.aperture-film','.dates-film']:
             seek(page,selector,.1)
             assert page.locator(selector+' > .film-stage').evaluate('(el)=>Math.abs(el.getBoundingClientRect().height-innerHeight)<2')
-            assert page.locator(selector+' > .film-stage').evaluate('(el)=>getComputedStyle(el).position')=='sticky'
-        seek(page,'#home',0);first=page.locator('.travel-photo').bounding_box()['width'];shot(page,'desktop-hero')
+            expected_position = 'relative' if selector in ['.profiles-film', '.aperture-film'] else 'sticky'
+            assert page.locator(selector+' > .film-stage').evaluate('(el)=>getComputedStyle(el).position') == expected_position
+        seek(page,'#home',0);first=page.locator('.hero-window').bounding_box()['width'];shot(page,'desktop-hero')
         assert abs(first-1440)<2
         assert page.locator('h1').evaluate('(el)=>getComputedStyle(el.parentElement).zIndex')=='8'
-        seek(page,'#home',.95);assert page.locator('.travel-photo').bounding_box()['width']<first*.4;shot(page,'desktop-hero-travel')
+        seek(page,'#home',.95);assert page.locator('.hero-window').bounding_box()['width']<first*.55;shot(page,'desktop-hero-travel')
+        assert float(page.locator('.travel-photo').evaluate('(el)=>getComputedStyle(el).opacity'))==0
         travel=page.locator('.travel-photo').element_handle()
         seek(page,'#home',.8);assert float(page.locator('.hero-revelation').evaluate('(el)=>getComputedStyle(el).opacity'))>.8;shot(page,'desktop-hero-reveal')
-        seek(page,'#opening',0);before=page.locator('.reading-content h2>span').last.evaluate('(el)=>getComputedStyle(el).opacity')
-        seek(page,'#opening',.48);assert float(page.locator('.reading-content h2>span').last.evaluate('(el)=>getComputedStyle(el).opacity'))>float(before);shot(page,'desktop-reading')
+        seek(page,'#opening',0)
+        expect(page.locator('.reading-content')).to_have_attribute('data-enter-state','complete')
+        assert page.locator('.reading-content h2>span').evaluate_all('els=>els.every(el=>+getComputedStyle(el).opacity===1)')
+        shot(page,'desktop-reading')
         assert travel.evaluate('(el)=>el===document.querySelector(".travel-photo")')
         seek(page,'#couple',.3);assert page.locator('.family-career').all_text_contents()==['Developer','Designer'];shot(page,'desktop-families')
         seek(page,'#couple',.93);assert page.locator('.profile-reunion').count()==0;assert page.locator('.family-person').evaluate_all('(els)=>els.every(el=>getComputedStyle(el).opacity==="1")');shot(page,'desktop-families-end')
@@ -78,8 +82,10 @@ with sync_playwright() as p:
         expect(page.locator('.photo-caption')).to_contain_text(f'{total} / {total}')
         page.keyboard.press('Escape');page.wait_for_timeout(350)
         page.get_by_role('button',name='Gấp album lại',exact=True).click()
-        seek(page,'.wave-film',.1);wave=page.locator('.wave-row').first.evaluate('(el)=>getComputedStyle(el).transform')
-        seek(page,'.wave-film',.9);assert wave!=page.locator('.wave-row').first.evaluate('(el)=>getComputedStyle(el).transform');shot(page,'desktop-wave')
+        seek(page,'.wave-film',.1)
+        expect(page.locator('.wave-type')).to_have_attribute('data-enter-state','complete')
+        wave=page.locator('.wave-row').first.evaluate('(el)=>getComputedStyle(el).transform')
+        seek(page,'.wave-film',.9);assert wave==page.locator('.wave-row').first.evaluate('(el)=>getComputedStyle(el).transform');shot(page,'desktop-wave')
         seek(page,'#event',.34);assert 'matrix3d' in page.locator('.date-panel').first.evaluate('(el)=>getComputedStyle(el).transform');shot(page,'desktop-paper-fold')
         for i,event in enumerate(site['events']):
             seek(page,'#event',(i+.5)/len(site['events']))
@@ -88,16 +94,16 @@ with sync_playwright() as p:
             shot(page,f'desktop-date-{i+1}')
             assert page.locator('.date-panel.is-active .date-actions button').count()==1
         page.locator('.date-panel.is-active').get_by_role('button',name='Mình có hẹn nhé').click()
-        page.get_by_label('TÊN CỦA BẠN',exact=True).fill('Khách mới')
+        page.get_by_role('dialog',name='Xác nhận tham dự').get_by_label('TÊN CỦA BẠN',exact=True).fill('Khách mới')
         page.get_by_label('SỐ NGƯỜI THAM DỰ',exact=True).select_option('3')
-        page.get_by_role('button',name='Gửi lời hẹn',exact=True).click()
+        page.get_by_role('button',name='Gửi xác nhận',exact=True).click()
         expect(page.locator('.rsvp-success')).to_be_visible();page.keyboard.press('Escape');page.wait_for_timeout(350)
         rows=page.evaluate('JSON.parse(localStorage.getItem("wedding-rsvp"))')
         assert rows[0]['name']=='Khách cũ' and rows[-1]['guests']==3
         page.locator('#wishes').evaluate('(el)=>el.scrollIntoView({block:"start",behavior:"instant"})');page.wait_for_timeout(900)
-        page.get_by_label('TỪ NGƯỜI THƯƠNG',exact=True).fill('Người thương mới')
-        page.get_by_label('GỬI ANH TÚ và MINH NGUYỆT',exact=True).fill('Chúc hai bạn vui mãi. Lời thương vẫn ở đây.')
-        page.get_by_role('button',name='Gửi lời thương',exact=True).click();page.wait_for_timeout(700)
+        page.locator('#wish-name').fill('Người thương mới')
+        page.locator('#wish-message').fill('Chúc hai bạn vui mãi. Lời thương vẫn ở đây.')
+        page.locator('.letter-form button[type=submit]').click();page.wait_for_timeout(700)
         assert page.locator('.pinned-note').count()==2
         page.get_by_role('button',name='Đọc lời chúc của Người thương mới',exact=True).click()
         expect(page.locator('.full-wish')).to_contain_text('Lời thương vẫn ở đây.')
@@ -114,7 +120,7 @@ with sync_playwright() as p:
         mobile.on('pageerror',lambda e:errors.append(str(e)))
         open_site(mobile, args.url,wait_until='networkidle');shot(mobile,'mobile-hero')
         mobile.get_by_role('button',name='Mở mục lục').click()
-        mobile.get_by_role('button',name='Lịch hẹn',exact=False).click()
+        mobile.get_by_role('dialog',name='Mục lục').get_by_role('button',name='Lịch cưới',exact=False).click()
         mobile.wait_for_function('()=>{const el=document.getElementById("event");return Math.abs(el.getBoundingClientRect().top-parseFloat(getComputedStyle(el).scrollMarginTop))<5}',timeout=7000)
         for selector,fraction,label in [('#home',.9,'reveal'),('#opening',.4,'reading'),('#couple',.3,'families'),('#couple',.93,'families-end'),('.reel-film',.53,'reel'),('.wave-film',.8,'wave'),('#event',.5,'date-2')]:
             seek(mobile,selector,fraction);healthy(mobile);shot(mobile,f'mobile-{label}')

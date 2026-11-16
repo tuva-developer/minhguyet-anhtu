@@ -60,11 +60,10 @@ function Magazine() {
   return <PresentationProvider ready={!opening}><LayoutGroup id="wedding-magazine">
     <DesktopMotion />
     <div className="wedding-content" inert={opening ? '' : undefined}>
-    <a className="skip-link" href="#opening">Đến nội dung chính</a>
+    <a className="skip-link" href="#couple">Đến nội dung chính</a>
     <Header playing={playing} loading={loadingAudio} onMusic={toggleMusic} onRSVP={() => setModal('rsvp')} />
     <main ref={main} className="soi-duyen">
-      <StoryFlow openingProgress={openingProgress}><Cover openingProgress={openingProgress} /><Letter /><Album onPhoto={openPhoto} /></StoryFlow>
-      <Families />
+      <StoryFlow><Cover openingProgress={openingProgress} /><Families /><Letter /><Album onPhoto={openPhoto} /></StoryFlow>
       <Aperture />
       <Schedule onRSVP={() => setModal('rsvp')} />
       <Guestbook />

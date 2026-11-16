@@ -1,20 +1,24 @@
-# Sợi duyên — chuyển cảnh theo cuộn
+# Sợi duyên — chuyển cảnh và hiệu ứng tự hiện
 
-Giao diện chuyển từ trang đọc sang các cảnh chiếm màn hình, đồng bộ bằng vị trí cuộn. Màu rượu trầm, nền tối/giấy ngà và ảnh thật của hai bạn tạo dấu ấn riêng. Các kỹ thuật giữ cảnh, zoom ảnh, parallax, phối cảnh và chuyển lớp tương tự loại trải nghiệm ở website tham khảo, được dựng lại bằng React/Framer Motion.
+Giao diện kết hợp các cảnh ảnh điều khiển bằng cuộn với nhóm nội dung tự hiện một lần. Desktop giữ camera, album và lật thiệp theo scroll; mobile ưu tiên đọc/xem ảnh bằng cuộn tự nhiên. Màu chủ đạo đỏ trầm `#681320`, nền giấy ngà và điểm nhấn vàng; nền bìa, album, lời hẹn và cảm ơn dùng radial gradient với viền tối, giới hạn vùng sáng ở màu chủ đạo. Header dùng lớp đỏ tối mờ. Gradient trên ảnh giữ độ tương phản cho chữ. Chỉ đỏ, badge, favicon và con trỏ cùng tông đỏ. Ảnh thật và chuyển động giữ nguyên, dùng React/Framer Motion.
 
 ## Các cảnh
 
-| Cảnh | Chuyển động theo cuộn |
+Lời dẫn lấy từ `src/data/story.js`, kể bằng giọng của hai bạn về những điều nhỏ, những ngày bên nhau và chọn chung một nhà. Bánh Bao chỉ được nhắc trong lời dẫn đi tiếp ở đoạn chuyển bìa; hình mèo vẫn chạy theo chỉ đỏ. Tên chương/mục lục thống nhất, phần lời chúc mang số 07; dữ liệu ảnh và lịch cưới giữ nguyên.
+
+| Cảnh | Cơ chế chuyển động hiện tại |
 | --- | --- |
 | Lần mở trang | Sợi chỉ vẽ thành trái tim, hai lớp giấy tách sang bên để lộ bìa đang tải bên dưới; có bỏ qua/Escape, giới hạn chờ ảnh, tự bỏ qua với giảm chuyển động và liên kết trực tiếp |
-| Mở đầu → lời ngỏ | Cùng một phần tử ảnh thu từ fullscreen sang chân dung, đi tiếp về chồng ảnh; chữ tách lớp và sáng từng từ |
-| Album | Chồng ảnh xòe thành lưới, đứng lại để chọn ảnh, khung đầu mở rộng fullscreen; mọi ảnh truy cập qua lightbox/lưới đầy đủ |
-| Hai gia đình | Thông tin bố mẹ nằm trên tên hai bạn; chân dung tách nền nổi trước vòm giấy, chữ cái và đường quỹ đạo, parallax nhẹ theo cuộn; không lặp màn ảnh chung |
-| Lời hẹn | Hai dòng chữ chạy thành làn sóng đối hướng, đứng lại thành câu hoàn chỉnh |
-| Lịch cưới | Thiệp fullscreen xoay quanh cạnh trái, bóng theo góc mở; có khoảng dừng và thiệp chi tiết |
-| Xuyên suốt → kết | Chỉ đỏ SVG chạy qua các chương và nối vào hai vòng nhẫn ở cảnh cuối |
+| 01 Bìa → 02 Hai chúng mình → 03 Lời ngỏ | Ảnh bìa thu vào khung và rời cùng trang 01; không đổi thành ảnh lời ngỏ sau profile. Ảnh trang 03 tiến lên cùng trang, nghiêng nhẹ về khung đọc rồi tiếp tục vào album. Mobile ảnh và chữ có điểm kích hoạt riêng |
+| Album | Desktop giữ chồng ảnh → lưới → ảnh fullscreen theo scroll. Mobile tự xòe lưới 2×2 rồi đứng yên; mọi ảnh truy cập qua lightbox/lưới đầy đủ |
+| Hai chúng mình | Chân dung tách nền, nghề nghiệp, vòm giấy và quỹ đạo tự tiến vào một lần; bỏ khoảng giữ cảnh desktop, giữ một màn hình và bố cục hai cột mobile |
+| Lời hẹn | Hai dòng chạy làn sóng trong 1 giây rồi đứng yên; không yêu cầu cuộn để ghép đủ câu |
+| Lịch cưới | Desktop giữ lật thiệp theo scroll, ngày giờ đứng yên. Mobile ba thiệp nối tiếp với ảnh tự hiện; RSVP luôn dùng được |
+| Xuyên suốt → kết | Chỉ đỏ và mèo theo cuộn thật; vòng nhẫn tự vẽ trong 1,2 giây khi xuất hiện, lời cảm ơn hiện một lần |
 
-Form lời chúc đứng yên khi viết, hỗ trợ giấy ghim/kéo thả desktop và mở đọc trên mobile. Cảnh cảm ơn cuối chiếm một màn hình. Desktop có độ đệm wheel ngắn, giữ nguyên quãng cuộn và nhường thao tác cho bàn phím, ô nhập, thanh cuộn và hộp thoại. Mobile dùng cuộn gốc; giảm chuyển động tắt độ đệm và vòng sáng con trỏ. Riêng màn mở đầu giữ nội dung bên dưới tạm thời không nhận thao tác, rồi khôi phục cuộn và focus khi mở xong hoặc bỏ qua.
+Form lời chúc đứng yên khi viết; note rải ngẫu nhiên trong bảng ghim cao cố định 460px desktop/420px mobile, note mới nằm trên note cũ và không đẩy bảng dài ra. Tên người gửi lộ phía trên từng tấm; hover/focus đưa tấm đó lên trước, bấm mở đọc đầy đủ. Không có vùng cuộn riêng hay nút lật; lời chúc mới xuất hiện đầu bảng, mọi tấm đều dùng được bằng bàn phím. Cảnh cảm ơn cuối chiếm một màn hình. Desktop có độ đệm wheel ngắn, giữ nguyên quãng cuộn và nhường thao tác cho bàn phím, ô nhập, thanh cuộn và hộp thoại. Mobile dùng cuộn gốc; giảm chuyển động tắt độ đệm và vòng sáng con trỏ. Riêng màn mở đầu giữ nội dung bên dưới tạm thời không nhận thao tác, rồi khôi phục cuộn và focus khi mở xong hoặc bỏ qua.
+
+Nhóm tự hiện bắt đầu ở 80% viewport sau khi intro hoàn tất. Dừng cuộn vẫn chạy xong; cuộn nhanh qua thì hoàn tất ngay; quay lại hoặc resize không phát lại. `useEnterProgress` tách biệt khỏi camera và chỉ đỏ; giảm chuyển động hiển thị trạng thái cuối ngay. Chạy `scripts/check-hybrid-motion.py` để kiểm tra các hành vi này và chụp đối chiếu desktop/mobile.
 
 ## Dữ liệu và ảnh
 
@@ -29,7 +33,7 @@ Form lời chúc đứng yên khi viết, hỗ trợ giấy ghim/kéo thả desk
 `npm run build` và `scripts/browser-check.py` đã kiểm tra:
 
 - Sáu cảnh có stage đúng một viewport và giữ bằng sticky khi cuộn.
-- Cùng một DOM ảnh di chuyển qua bìa/lời ngỏ; album đổi đội hình và mở fullscreen; chữ làn sóng, profile hợp khung, matrix3d của thiệp đổi theo tiến độ.
+- Ảnh bìa ở trong trang 01, camera riêng của lời ngỏ/album không xuất hiện trên trang profile; album đổi đội hình và mở fullscreen; chữ làn sóng, profile hợp khung, matrix3d của thiệp đổi theo tiến độ.
 - Ba cảnh lịch cưới, thiệp chi tiết, RSVP, nhạc phát/dừng, album/lightbox/slideshow, focus modal, Escape và vuốt mobile.
 - Giữ dữ liệu RSVP/lời chúc cũ khi gửi mới và tải lại trang.
 - Mobile giữ chuyển động fullscreen. Không tràn ngang hoặc cắt tên ở chiều rộng 320/390/768/1024/1440px.

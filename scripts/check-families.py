@@ -1,4 +1,4 @@
-"""Check occupations, readable profile headings, strong scroll motion and fallbacks."""
+"""Check occupations, readable profile headings, settled entrances and fallbacks."""
 import argparse
 from pathlib import Path
 from browser_helpers import open_site
@@ -21,6 +21,8 @@ with sync_playwright() as p:
         page = browser.new_page(viewport={'width':width,'height':height})
         page.on('pageerror', lambda error: errors.append(str(error)))
         open_site(page, args.url, wait_until='networkidle')
+        assert page.locator('.film-scene').evaluate_all('(els)=>els.slice(0,3).map(el=>el.id)') == ['home', 'couple', 'opening']
+        assert page.locator('.family-stage .scene-hud>div:first-child>span').first.inner_text() == '02'
         seek(page, .35)
         if width <= 700:
             page.wait_for_timeout(500)
@@ -34,6 +36,15 @@ with sync_playwright() as p:
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
         assert page.locator('.family-parents').count()==0
         assert page.locator('.family-career').all_text_contents()==['Developer','Designer']
+        assert page.locator('.family-stage').evaluate('el=>getComputedStyle(el).backgroundColor') == 'rgb(230, 204, 197)'
+        assert page.locator('.reading-film').evaluate('el=>getComputedStyle(el).backgroundColor') == 'rgb(250, 247, 240)'
+        assert page.locator('.family-stage').evaluate('''el=>{
+          const profile=getComputedStyle(el.closest('#couple'));
+          const camera=document.querySelector('.travel-photo');
+          return getComputedStyle(el).backgroundColor!=='rgba(0, 0, 0, 0)'
+            && profile.isolation==='isolate'
+            && (!camera || +profile.zIndex>+getComputedStyle(camera).zIndex);
+        }'''), 'Travel photo must stay behind the profile page'
         assert all(name not in page.locator('#couple').inner_text() for name in ['Võ Minh Tuấn','Hoàng Thị Kiều Thu','Lương Văn Duyên','Dương Thị Hoa','Đồng Nai'])
         bounds = page.locator('.family-person').evaluate_all('''els=>els.map(el=>{
           const r=selector=>el.querySelector(selector).getBoundingClientRect();
@@ -48,18 +59,23 @@ with sync_playwright() as p:
         early = page.locator('.family-subject-frame').first.evaluate('(el)=>{const m=new DOMMatrix(getComputedStyle(el).transform);return {x:m.m41,y:m.m42,scale:Math.hypot(m.a,m.b)}}')
         seek(page, .35)
         settled = page.locator('.family-subject-frame').first.evaluate('(el)=>{const m=new DOMMatrix(getComputedStyle(el).transform);return {x:m.m41,y:m.m42,scale:Math.hypot(m.a,m.b)}}')
-        if width > 700:
-            assert abs(early['x']-settled['x'])>15 and early['y']-settled['y']>40 and settled['scale']-early['scale']>.12,(width,early,settled)
-        else:
-            assert early == settled, (width, early, settled)
-            assert page.locator('#couple').get_attribute('data-scene-mode') == 'scroll'
+        assert early == settled, (width, early, settled)
+        assert page.locator('#couple').get_attribute('data-scene-mode') == 'enter'
         page.screenshot(path=str(out/f'{width}-profiles-settled.png'))
         seek(page, .85)
         assert abs(page.locator('.family-name').first.bounding_box()['y']-name_y)<1
         page.screenshot(path=str(out/f'{width}-families.png'))
         page.locator('.family-stage .hud-scroll').click()
-        page.wait_for_function('()=>{const el=document.getElementById("event");return Math.abs(el.getBoundingClientRect().top-parseFloat(getComputedStyle(el).scrollMarginTop))<5}')
-        print(f'PASS {width}x{height}: Developer/Designer, no parent details, full names, pronounced scroll entrance and schedule link.', flush=True)
+        page.wait_for_function('()=>{const el=document.getElementById("opening");return Math.abs(el.getBoundingClientRect().top-parseFloat(getComputedStyle(el).scrollMarginTop))<5}')
+        for current, target in [('.reading-stage', '.reel-film'), ('.montage-stage', '.wave-film'), ('.wave-stage', '#event')]:
+            button = page.locator(current + ' .hud-scroll')
+            assert button.evaluate('el=>el.tagName') == 'BUTTON'
+            if current == '.reading-stage':
+                button.focus(); page.keyboard.press('Enter')
+            else:
+                button.click()
+            page.wait_for_function('selector=>{const el=document.querySelector(selector);return Math.abs(el.getBoundingClientRect().top-parseFloat(getComputedStyle(el).scrollMarginTop))<5}', arg=target)
+        print(f'PASS {width}x{height}: distinct chapter backgrounds, readable profiles, keyboard and next-scene buttons.', flush=True)
         page.close()
 
     fallback = browser.new_page(viewport={'width':390,'height':844})
@@ -77,6 +93,9 @@ with sync_playwright() as p:
     assert reduced.locator('.family-stage').evaluate('(el)=>getComputedStyle(el).position')=='relative'
     assert reduced.locator('.family-subject-frame').evaluate_all('(els)=>els.every(el=>getComputedStyle(el).transform==="none")')
     assert reduced.locator('.family-career').all_text_contents()==['Developer','Designer']
+    reduced.locator('#opening').evaluate('el=>el.scrollIntoView({behavior:"instant"})')
+    reduced.locator('.reading-stage .hud-scroll').click()
+    reduced.wait_for_function('Math.abs(document.querySelector(".reel-film").getBoundingClientRect().top)<5')
     assert not errors, errors
     print('PASS cutout failure falls back to original portraits; reduced motion; no JavaScript errors.',flush=True)
     browser.close()

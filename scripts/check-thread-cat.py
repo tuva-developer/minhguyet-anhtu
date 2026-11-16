@@ -88,7 +88,8 @@ with sync_playwright() as p:
             # viewport coordinates, not recoil against native scrolling.
             for selector, fraction in [('#home',.4),('#opening',.4),('.reel-film',.4),('#couple',.4),('.wave-film',.4),('#event',.15),('#event',.5),('#event',.83)]:
                 seek(page,selector,fraction)
-                assert page.locator(selector+' > .film-stage').evaluate('el=>getComputedStyle(el).position')=='sticky'
+                pinned = selector not in ['#couple', '.wave-film']
+                assert page.locator(selector+' > .film-stage').evaluate('el=>getComputedStyle(el).position') == ('sticky' if pinned else 'relative')
                 page.mouse.move(width*.4,height*.45)
                 for delta in [120,-120]:
                     page.mouse.wheel(0,delta)
@@ -105,7 +106,8 @@ with sync_playwright() as p:
                       }
                       return result;
                     }''')
-                    assert max(row['y'] for row in live)-min(row['y'] for row in live)<2,(width,selector,delta,live)
+                    if pinned:
+                        assert max(row['y'] for row in live)-min(row['y'] for row in live)<2,(width,selector,delta,live)
                     assert max(row['gap'] for row in live)<2,(width,selector,delta,live)
             print(f'PASS {width}px: stable viewport anchor during live forward/reverse wheel input in every pinned scene.',flush=True)
         else:

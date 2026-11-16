@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useScroll, useTransform } from 'framer-motion';
 import { CinemaPhoto, useMedia } from './Media';
-import CoverCamera from './CoverCamera';
 import { usePresentation, useSoftScroll } from './Scene';
 import ThreadCat from './ThreadCat';
 import { createThreadTrack } from '../lib/threadTrack';
@@ -13,14 +12,14 @@ const StoryFlowContext = createContext(null);
 const HANDOFF = .08;
 export const useStoryFlow = () => useContext(StoryFlowContext);
 
-// One frame travels between scenes; each scene has its own photograph. Crossfades
-// happen inside that frame, with no source swap or change to docking geometry.
+// The cover owns its local frame. This camera starts with the letter and travels
+// into the album; it never carries a photograph across the profile page.
 // Measurements are document coordinates; image loading never drives the timeline.
-export function StoryFlow({ children, openingProgress }) {
+export function StoryFlow({ children }) {
   const ref = useRef(null);
-  const { cover, couple, albumLead, photos } = useMedia();
-  const { compact } = usePresentation();
-  const reduced = useReducedMotion();
+  const { couple, albumLead, photos } = useMedia();
+  const letterPhoto = couple || albumLead;
+  const { compact, reduced } = usePresentation();
   const { scrollY } = useScroll();
   const softY = useSoftScroll(scrollY, window.innerHeight * .85, .1);
   const [geometry, setGeometry] = useState(null);
@@ -32,7 +31,7 @@ export function StoryFlow({ children, openingProgress }) {
         const el = root.querySelector(selector);
         return el ? { top: el.getBoundingClientRect().top + window.scrollY, travel: Math.max(1, el.offsetHeight - innerHeight) } : null;
       };
-      setGeometry({ w: innerWidth, h: innerHeight, hero: scene('.hero-film'), letter: scene('.reading-film'), album: scene('.reel-film') });
+      setGeometry({ w: innerWidth, h: innerHeight, letter: scene('.reading-film'), album: scene('.reel-film') });
     }
     const observer = new ResizeObserver(measure);
     observer.observe(root);
@@ -42,38 +41,33 @@ export function StoryFlow({ children, openingProgress }) {
   }, [photos.length, scrollY, compact]);
   const frame = useTransform(softY, value => {
     if (!geometry) return { x: 0, y: 0, width: 0, height: 0, rotate: 0, radius: 0, opacity: 0 };
-    const { w, h, hero, letter, album } = geometry;
-    const mobile = w <= 700;
-    const full = { x: 0, y: 0, width: w, height: h, rotate: 0, radius: 0 };
-    const portrait = mobile
-      ? { x: w * .65, y: h * .2, width: w * .30, height: h * .27, rotate: 5, radius: 2 }
-      : { x: w * .65, y: h * .2, width: w * .29, height: h * .62, rotate: 4, radius: 2 };
+    const { w, h, letter, album } = geometry;
+    const portrait = { x: w * .65, y: h * .2, width: w * .29, height: h * .62, rotate: 4, radius: 2 };
     // Match the first album tile exactly before ownership switches: its center
     // is at 52.5vh and its height is 59vh (top = 23vh).
-    const stack = { x: w * (mobile ? .19 : .35), y: h * .23, width: w * (mobile ? .62 : .30), height: h * .59, rotate: -6, radius: 0 };
-    let from = full, to = portrait, t = smooth((value - hero.top - hero.travel * .35) / (hero.travel * .65));
-    if (value > letter.top + letter.travel * .5) {
-      from = portrait; to = stack;
-      const end = album ? album.top + album.travel * HANDOFF : letter.top + letter.travel;
-      t = smooth((value - letter.top - letter.travel * .5) / Math.max(1, end - letter.top - letter.travel * .5));
-    }
-    const result = Object.fromEntries(Object.keys(full).map(key => [key, mix(from[key], to[key], t)]));
+    const stack = { x: w * .35, y: h * .23, width: w * .30, height: h * .59, rotate: -6, radius: 0 };
+    // Arrive with the letter's own page instead of reappearing at a fixed screen
+    // position. Before that page enters, this frame is completely offscreen.
+    const arrival = smooth((value - letter.top + h * .65) / (h * .65));
+    const end = album ? album.top + album.travel * HANDOFF : letter.top + letter.travel;
+    const t = album ? smooth((value - letter.top - letter.travel * .5) / Math.max(1, end - letter.top - letter.travel * .5)) : 0;
+    const result = Object.fromEntries(Object.keys(portrait).map(key => [key, mix(portrait[key], stack[key], t)]));
+    result.y += Math.max(0, letter.top - value) + (1 - arrival) * h * .05;
+    result.rotate += (1 - arrival) * -9;
     // Never crossfade two photos at different screen positions. The traveling
     // image owns the frame until it docks; then only the album tile is painted.
-    if (album) result.opacity = value < hero.top - h || value >= album.top + album.travel * HANDOFF ? 0 : 1;
-    else result.opacity = value < hero.top - h ? 0 : 1 - smooth((value - letter.top - letter.travel + h * .3) / (h * .3));
+    if (album) result.opacity = value >= end ? 0 : arrival;
+    else {
+      const exit = Math.max(0, value - end);
+      result.y -= exit;
+      result.opacity = arrival * (1 - smooth(exit / (h * .8)));
+    }
     return result;
   });
   const x = useTransform(frame, v => v.x), y = useTransform(frame, v => v.y);
   const width = useTransform(frame, v => v.width), height = useTransform(frame, v => v.height);
   const rotate = useTransform(frame, v => v.rotate), borderRadius = useTransform(frame, v => v.radius);
   const opacity = useTransform(frame, v => v.opacity);
-  const letterOpacity = useTransform(softY, value => {
-    if (!geometry || !couple) return 0;
-    const { hero, letter } = geometry;
-    const start = hero.top + hero.travel * .6;
-    return smooth((value - start) / Math.max(1, letter.top - start));
-  });
   const leadOpacity = useTransform(softY, value => {
     if (!geometry?.album || !albumLead) return 0;
     const { letter, album } = geometry;
@@ -82,15 +76,14 @@ export function StoryFlow({ children, openingProgress }) {
   });
   const albumProgress = useTransform(softY, value => geometry?.album ? clamp((value - geometry.album.top) / geometry.album.travel) : 0);
   const albumPhotoOpacity = useTransform(softY, value => {
-    if (!cover || reduced) return 1;
+    if (!letterPhoto || reduced) return 1;
     return geometry?.album && value >= geometry.album.top + geometry.album.travel * HANDOFF ? 1 : 0;
   });
-  return <StoryFlowContext.Provider value={compact ? null : { albumProgress, albumPhotoOpacity, leadSrc: albumLead?.src }}><div ref={ref} className={`story-flow ${cover && !reduced && !compact ? 'has-travel-photo' : ''}`}>
+  return <StoryFlowContext.Provider value={compact ? null : { albumProgress, albumPhotoOpacity, leadSrc: albumLead?.src }}><div ref={ref} className={`story-flow ${letterPhoto && !reduced && !compact ? 'has-travel-photo' : ''}`}>
     {children}
-    {cover && !reduced && !compact && <motion.div className="travel-photo" aria-hidden="true" style={{ x, y, width, height, rotate, borderRadius, opacity }}>
-      <div className="travel-photo-layer travel-cover-layer" data-photo-id={cover.id}><CoverCamera photo={cover} progress={openingProgress} scroll={softY} geometry={geometry} /></div>
-      {couple && <motion.div className="travel-photo-layer travel-letter-layer" data-photo-id={couple.id} style={{ opacity: letterOpacity }}><CinemaPhoto photo={couple} priority decorative /></motion.div>}
-      {albumLead && <motion.div className="travel-photo-layer travel-album-layer" data-photo-id={albumLead.id} style={{ opacity: leadOpacity }}><CinemaPhoto photo={albumLead} priority decorative /></motion.div>}
+    {letterPhoto && !reduced && !compact && <motion.div className="travel-photo" aria-hidden="true" style={{ x, y, width, height, rotate, borderRadius, opacity }}>
+      <div className="travel-photo-layer travel-letter-layer" data-photo-id={letterPhoto.id}><CinemaPhoto photo={letterPhoto} priority decorative /></div>
+      {albumLead && albumLead.src !== letterPhoto.src && <motion.div className="travel-photo-layer travel-album-layer" data-photo-id={albumLead.id} style={{ opacity: leadOpacity }}><CinemaPhoto photo={albumLead} priority decorative /></motion.div>}
       <div className="travel-photo-shade" />
     </motion.div>}
   </div></StoryFlowContext.Provider>;

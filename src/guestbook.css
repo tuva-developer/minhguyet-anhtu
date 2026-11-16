@@ -1,0 +1,106 @@
+/* A compact letter beside a stack of wishes; no nested scrolling. */
+.guestbook-section { min-height: 0; padding-top: 22px; padding-bottom: 16px; }
+.guestbook-section .guestbook-spread { align-items: start; padding: 20px 0 4px; gap: 7%; }
+.guestbook-section .letter-form-wrap { position: relative; }
+.guestbook-section .letter-form-heading { padding-right: 88px; }
+.guestbook-section .letter-form-wrap h2 { margin-top: 10px; font-size: clamp(32px, 3vw, 42px); }
+.guestbook-section .letter-form-wrap > p { margin-top: 10px; }
+.guestbook-section .letter-form { margin-top: 14px; gap: 6px; }
+.guestbook-section .wish-form > label { margin-top: 4px; }
+.guestbook-section .wish-form input { padding-block: 6px; }
+.guestbook-section .wish-form textarea { height: 76px; min-height: 76px; padding-block: 0; line-height: 25px; background-size: auto 25px; background-image: repeating-linear-gradient(transparent, transparent 24px, #c9bfb150 24px, #c9bfb150 25px); }
+.guestbook-section .letter-form-bottom { margin-top: 8px; justify-content: flex-end; flex-wrap: wrap; gap: 8px 16px; }
+.guestbook-section .letter-form-bottom .button { min-height: 44px; padding: 12px 20px; }
+.guestbook-section .letter-form-bottom > button { flex-shrink: 0; margin-left: auto; }
+.guestbook-section .postmark { position: absolute; top: 4px; right: 7px; width: 64px; height: 64px; pointer-events: none; }
+.guestbook-section .postmark > span { font-size: 19px; }
+.guestbook-section .postmark .postmark-copy { font-size: 6px; line-height: 1.5; text-align: center; }
+.guestbook-section .postmark-copy strong { display: block; font-size: 6px; margin-top: 2px; }
+.guestbook-section .form-status { margin: 0; min-height: 0; flex: 1 1 200px; }
+.guestbook-section .form-status:empty { display: none; }
+.guestbook-section .storage-note { margin-top: 6px; }
+.guestbook-section .wish-board {
+  min-height: 0; align-self: start; padding: 20px 16px 16px; background-color: #cbb391;
+  background-image: radial-gradient(ellipse at 20% 30%, #7c573a24 .7px, transparent 1px),
+    radial-gradient(ellipse at 70% 60%, #fff3d44a .9px, transparent 1.4px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23916b43' opacity='.16' filter='url(%23grain)' d='M0 0h140v140H0z'/%3E%3C/svg%3E");
+  background-size: 7px 9px, 11px 13px, 140px 140px;
+  border: 6px solid #9a765f; border-radius: 7px;
+  box-shadow: inset 0 0 0 1px #5c3c2638, inset 0 4px 10px #5c3c261a,
+    0 1px 0 #d7bea2, 0 10px 24px #35101912;
+}
+/* Seeded offsets and torn paper keep the board informal without reshuffling. */
+.guestbook-section .wish-piles { position: relative; display: block; height: 360px; overflow: visible; isolation: isolate; padding: 0; margin-top: 8px; }
+.guestbook-section .pinned-note {
+  position: absolute; top: var(--wish-top); left: var(--wish-left);
+  width: var(--wish-width); height: auto; margin: 0;
+  --note-paper: #fff6d8;
+  --paper-edge: polygon(0 1%, 8% .3%, 19% 1%, 31% 0, 44% .7%, 59% .2%, 72% 1%, 87% .1%, 100% .6%, 99.4% 18%, 100% 35%, 99.5% 53%, 100% 70%, 99.3% 86%, 100% 98%, 94% 99%, 88% 97.6%, 81% 100%, 75% 98.3%, 69% 99.5%, 63% 97.8%, 57% 100%, 51% 98%, 44% 99.6%, 38% 97.8%, 32% 100%, 25% 98.4%, 19% 99.5%, 12% 97.9%, 6% 100%, 0 98.4%, .7% 82%, .1% 64%, .6% 46%, 0 28%);
+  background: transparent; border: 0; border-radius: 0;
+  box-shadow: none; filter: drop-shadow(1px 4px 3px #533b2933); z-index: var(--wish-layer); rotate: var(--wish-angle);
+  touch-action: pan-y;
+}
+.guestbook-section .pinned-note::before { content: ''; position: absolute; z-index: -1; inset: 0; pointer-events: none; clip-path: var(--paper-edge); background: linear-gradient(165deg, #ffffff26, transparent 65%, #6845230a), var(--note-paper); }
+.guestbook-section .pinned-note:nth-child(even) { margin: 0; background: transparent; }
+.guestbook-section .pinned-note.note-tone-cream { --note-paper: #fff6d8; }
+.guestbook-section .pinned-note.note-tone-rose { --note-paper: #f5dfd8; }
+.guestbook-section .pinned-note.note-tone-sage { --note-paper: #e6e8d7; }
+.guestbook-section .pinned-note.note-edge-1 { --paper-edge: polygon(.4% 0, 18% .7%, 36% .1%, 52% 1%, 71% .2%, 88% .9%, 99.7% 0, 100% 19%, 99.3% 41%, 100% 66%, 99.6% 87%, 100% 99%, 93% 97.8%, 87% 100%, 80% 98.5%, 73% 99.7%, 67% 97.5%, 60% 99.8%, 54% 98.4%, 47% 100%, 40% 98%, 33% 99.6%, 26% 97.8%, 19% 100%, 13% 98.5%, 6% 99.6%, .2% 98%, 0 78%, .6% 59%, 0 38%, .7% 19%); }
+.guestbook-section .pinned-note.note-edge-2 { --paper-edge: polygon(0 .4%, 11% 0, 28% .8%, 45% .1%, 62% 1%, 79% .2%, 100% .8%, 99.6% 24%, 100% 43%, 99.4% 62%, 100% 81%, 99.7% 98%, 93% 100%, 86% 98%, 79% 99.5%, 71% 97.6%, 64% 100%, 57% 98.5%, 49% 99.7%, 42% 97.8%, 35% 100%, 28% 98.2%, 20% 99.5%, 14% 97.8%, 7% 100%, 0 98%, .6% 77%, 0 57%, .5% 36%); }
+.guestbook-section .pinned-note:hover, .guestbook-section .pinned-note:focus-within { z-index: calc(var(--wish-count) + 3); filter: drop-shadow(1px 6px 5px #533b2940); }
+.guestbook-section .pinned-note > .wish-read-button { position: relative; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; width: 100%; height: auto; min-height: 84px; max-height: calc(var(--wish-canvas-height) - 40px); text-align: left; padding: 23px 12px 18px; cursor: grab; overflow: hidden; border-radius: inherit; }
+.guestbook-section .pinned-note > .wish-read-button:active { cursor: grabbing; }
+.guestbook-section .pinned-note .note-from { position: relative; z-index: 1; flex-shrink: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; color: var(--wine); font: 500 13px/1.35 var(--sans); padding-right: 8px; }
+.guestbook-section .pinned-note p { flex: 0 1 auto; min-height: 0; display: block; font: 400 12px/1.5 var(--sans); margin: 7px 0 0; max-height: none; -webkit-line-clamp: unset; white-space: pre-wrap; overflow-wrap: anywhere; color: #655b56; }
+.guestbook-section .note-pin {
+  position: absolute; z-index: 2; top: -4px; left: calc(50% - 18px); width: 36px; height: 28px;
+  padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; appearance: none; cursor: grab; touch-action: none;
+}
+.guestbook-section .note-pin:active { cursor: grabbing; }
+.guestbook-section .note-pin::before { content: ''; position: absolute; top: 11px; left: 13.5px; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #d18d91 0 10%, #8d2938 35%, var(--wine) 68%, #3d0d17); box-shadow: 1px 2px 2px #533b2940; }
+.guestbook-section .note-pin::after { content: ''; position: absolute; top: 19px; left: 18.5px; width: 1px; height: 4px; background: #5a4336; rotate: -25deg; transform-origin: top; }
+.wish-read-arrow { position: absolute; right: 9px; bottom: 8px; color: var(--wine); }
+.guestbook-section .empty-notes { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 36px 12px; font-size: 23px; }
+.guestbook-section .section-bottom { margin-top: 16px; padding-top: 10px; }
+/* The reader is an open paper letter; only the message scrolls when necessary. */
+.modal-backdrop.note-backdrop { padding: 24px; background: #230b16c9; backdrop-filter: blur(12px); }
+.modal-content.note-dialog { width: min(600px, 100%); padding: 0; max-height: calc(100svh - 48px); overflow: visible; background: transparent; box-shadow: none; }
+.note-letter { position: relative; isolation: isolate; display: flex; flex-direction: column; max-height: inherit; padding: 38px 40px 22px; filter: drop-shadow(0 18px 32px #10030950); }
+.note-letter::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(135deg, #fffdf5, #f3e9d8); clip-path: polygon(0 0, 100% 0, 100% 98.7%, 97% 99.5%, 94% 98.8%, 90% 100%, 86% 99%, 82% 99.7%, 77% 98.8%, 72% 100%, 67% 99.2%, 62% 99.8%, 57% 98.9%, 52% 100%, 47% 99%, 42% 99.8%, 37% 98.9%, 32% 100%, 27% 99.1%, 22% 99.7%, 17% 98.8%, 12% 100%, 8% 99%, 4% 99.7%, 0 98.7%); }
+.note-letter::after { content: ''; position: absolute; inset: 20px auto 24px 20px; width: 1px; background: #68132016; pointer-events: none; }
+.note-letter-pin { position: absolute; top: 12px; left: calc(50% - 4.5px); width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #d18d91, var(--wine) 60%, #3d0d17); box-shadow: 1px 2px 2px #533b2940; }
+.note-dialog .modal-close { top: 12px; right: 12px; width: 44px; height: 44px; color: var(--wine); background: transparent; border-color: #68132020; }
+.note-dialog .modal-close:hover { background: #6813200b; }
+.note-letter-header { flex-shrink: 0; padding-right: 30px; }
+.note-sender-label { color: var(--wine); font: 500 10px/1.5 var(--sans); letter-spacing: .15em; }
+.note-dialog .note-letter-header h2 { font: 500 clamp(24px, 4vw, 32px)/1.2 var(--serif); letter-spacing: -.02em; overflow-wrap: anywhere; margin: 7px 0 10px; }
+.note-letter-date { display: flex; align-items: center; gap: 7px; color: #8c7969; font: 400 11px/1.5 var(--sans); }
+.note-letter-body { position: relative; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #a8816c transparent; margin: 26px 0 24px; padding: 18px 6px 3px 0; }
+.note-quote { position: absolute; top: -16px; left: -2px; color: #6813201a; font: 100px/1 var(--serif); pointer-events: none; }
+.note-dialog .full-wish { position: relative; margin: 0; color: #49332e; font: 500 clamp(25px, 4.5vw, 32px)/1.5 var(--serif); letter-spacing: -.01em; white-space: pre-wrap; overflow-wrap: anywhere; }
+.note-letter-footer { flex-shrink: 0; display: flex; align-items: center; gap: 9px; padding-top: 12px; border-top: 1px solid #6813201b; color: #936c59; }
+.note-letter-footer > svg { flex-shrink: 0; color: var(--wine); }
+.note-letter-footer > span { font: 400 9px/1.6 var(--sans); letter-spacing: .05em; }
+.note-letter-footer > button { flex-shrink: 0; margin-left: auto; min-height: 44px; padding: 0 8px; color: var(--wine); background: transparent; font: 500 12px var(--sans); }
+.note-letter-footer > button:hover { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 700px) {
+  .modal-backdrop.note-backdrop { padding: 16px; }
+  .modal-content.note-dialog { max-height: calc(100svh - 32px); }
+  .note-letter { padding: 34px 24px 18px; }
+  .note-letter::after { left: 12px; }
+  .note-dialog .modal-close { top: 8px; right: 8px; }
+  .note-dialog .note-letter-header h2 { font-size: 25px; }
+  .note-letter-body { margin: 20px 0; padding-top: 16px; }
+  .note-dialog .full-wish { font-size: 25px; }
+  .note-letter-footer { gap: 7px; }
+  .note-letter-footer > span { font-size: 8px; }
+}
+@media (max-width: 700px) {
+  .guestbook-section { padding-top: 22px; }
+  .guestbook-section .guestbook-spread { padding-top: 20px; }
+  .guestbook-section .postmark { width: 54px; height: 54px; }
+  .guestbook-section .letter-form-heading { padding-right: 76px; }
+  .guestbook-section .wish-board { margin-top: 22px; padding: 18px 9px 12px !important; border-width: 5px; }
+  .guestbook-section .wish-piles { height: 320px; }
+  .guestbook-section .pinned-note > .wish-read-button { padding: 23px 9px 18px; cursor: pointer; }
+}
